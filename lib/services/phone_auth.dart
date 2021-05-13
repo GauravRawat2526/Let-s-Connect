@@ -19,6 +19,7 @@ class PhoneAuth {
     if (error.code == 'invalid-phone-number') {
       _showSnackBarAndPopScreen(context, 'Invalid Phone Number');
     }
+    _showSnackBarAndPopScreen(context, 'verification Failed');
     print('verification Failed');
     print(error.message);
   }
@@ -49,6 +50,7 @@ class PhoneAuth {
   }
 
   static void logout() {
+    print('logout');
     _auth.signOut();
   }
 
