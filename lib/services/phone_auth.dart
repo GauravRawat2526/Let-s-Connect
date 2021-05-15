@@ -7,10 +7,11 @@ class PhoneAuth {
   static PhoneAuthCredential _phoneAuthcredential;
   static String _verificationId;
 
-  static void _verificationCompleted(
-      PhoneAuthCredential phoneAuthCredential, TextEditingController pinOtp) {
+  static void _verificationCompleted(PhoneAuthCredential phoneAuthCredential,
+      TextEditingController pinOtp, BuildContext context) {
     _phoneAuthcredential = phoneAuthCredential;
     pinOtp.text = _phoneAuthcredential.smsCode;
+    _login(context);
   }
 
   static void _verificationFailed(
@@ -18,6 +19,7 @@ class PhoneAuth {
     if (error.code == 'invalid-phone-number') {
       _showSnackBarAndPopScreen(context, 'Invalid Phone Number');
     }
+    _showSnackBarAndPopScreen(context, 'verification Failed');
     print('verification Failed');
     print(error.message);
   }
@@ -35,7 +37,7 @@ class PhoneAuth {
     await _auth.verifyPhoneNumber(
         phoneNumber: '+91 $mobileNumber',
         verificationCompleted: (phoneAuthCredential) =>
-            _verificationCompleted(phoneAuthCredential, pinOtp),
+            _verificationCompleted(phoneAuthCredential, pinOtp, context),
         verificationFailed: (error) => _verificationFailed(error, context),
         codeSent: _codeSent,
         codeAutoRetrievalTimeout: _codeAutoRetrievalTimeout);
@@ -44,15 +46,20 @@ class PhoneAuth {
   static void verifyOtp(String code, BuildContext context) async {
     _phoneAuthcredential = PhoneAuthProvider.credential(
         verificationId: _verificationId, smsCode: code);
+<<<<<<< HEAD
     _auth
         .signInWithCredential(_phoneAuthcredential)
         .then((userCredential) => Navigator.of(context).pop())
         .catchError((error) {
       _showSnackBarAndPopScreen(context, 'Verification Not Successful');
     });
+=======
+    _login(context);
+>>>>>>> 1cb81d9e0c6691ea6263e43c9b189b852976f944
   }
 
   static void logout() {
+    print('logout');
     _auth.signOut();
   }
 
@@ -66,5 +73,15 @@ class PhoneAuth {
         duration: Duration(seconds: 2),
       ),
     );
+    Navigator.of(context).pop();
+  }
+
+  static void _login(BuildContext context) {
+    _auth
+        .signInWithCredential(_phoneAuthcredential)
+        .then((userCredential) => Navigator.of(context).pop())
+        .catchError((error) {
+      _showSnackBarAndPopScreen(context, 'Verification Not Successful');
+    });
   }
 }
