@@ -47,7 +47,7 @@ class PhoneAuth {
     _auth
         .signInWithCredential(_phoneAuthcredential)
         .then((userCredential) => Navigator.of(context).pop())
-        .catchError(() {
+        .catchError((error) {
       _showSnackBarAndPopScreen(context, 'Verification Not Successful');
     });
   }

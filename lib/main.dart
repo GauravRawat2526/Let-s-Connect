@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-
+import 'onboarding_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import './screen/login_screen.dart';
 import './services/firestore_service.dart';
 import './screen/chat_screen.dart';
 import './screen/input_user_data_screen.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -20,10 +18,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Let\'s Connect',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.purple,
         accentColor: Colors.blueAccent,
-        fontFamily: 'Open-Sans',
+        fontFamily: "Arial Rounded",
         textTheme: ThemeData.light().textTheme.copyWith(
               bodyText1: TextStyle(color: Colors.purple, fontSize: 18),
               subtitle1: TextStyle(
@@ -52,7 +51,7 @@ class MyApp extends StatelessWidget {
                   return InputUserDataScreen(userSnapshot.data.uid);
                 });
           }
-          return LoginScreen();
+          return OnboardingScreen();
         },
       ),
       // routes: {OtpVerifyScreen.routeName: (ctx) => OtpVerifyScreen()},
