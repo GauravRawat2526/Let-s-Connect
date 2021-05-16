@@ -72,8 +72,8 @@ class PhoneAuth {
   static void _login(BuildContext context) {
     _auth
         .signInWithCredential(_phoneAuthcredential)
-        .then((value) =>
-            Navigator.of(context).pushReplacementNamed(RoutingScreen.routeName))
+        .then((value) => Navigator.of(context)
+            .pushNamedAndRemoveUntil(RoutingScreen.routeName, (route) => false))
         .catchError((error) {
       _showSnackBarAndPopScreen(context, 'Verification Not Successful');
     });

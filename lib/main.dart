@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'screen/onboarding_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import './screen/loadingScreen.dart';
@@ -19,10 +19,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Let\'s Connect',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.purple,
         accentColor: Colors.blueAccent,
-        fontFamily: 'Open-Sans',
+        fontFamily: "Arial Rounded",
         textTheme: ThemeData.light().textTheme.copyWith(
               bodyText1: TextStyle(color: Colors.purple, fontSize: 18),
               subtitle1: TextStyle(
@@ -39,7 +40,8 @@ class MyApp extends StatelessWidget {
       routes: {
         RoutingScreen.routeName: (_) => RoutingScreen(),
         LoginScreen.routeName: (_) => LoginScreen(),
-        HomePage.routeName: (_) => HomePage()
+        HomePage.routeName: (_) => HomePage(),
+        OnboardingScreen.routeName: (_) => OnboardingScreen()
       },
     );
   }
@@ -66,7 +68,7 @@ class _RoutingScreenState extends State<RoutingScreen> {
     await Future.delayed(Duration(seconds: 1));
     print(FirebaseAuth.instance.currentUser);
     if (FirebaseAuth.instance.currentUser == null) {
-      Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+      Navigator.of(context).pushReplacementNamed(OnboardingScreen.routeName);
     } else {
       Navigator.of(context).pushReplacementNamed(HomePage.routeName);
     }

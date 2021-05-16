@@ -8,6 +8,7 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
+        padding: EdgeInsets.only(top: 0),
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName: Text('Dummy'),
@@ -17,6 +18,10 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
+            leading: Icon(
+              Icons.edit,
+              color: Theme.of(context).primaryColor,
+            ),
             title: Text('Edit Profile'),
             onTap: () {
               Navigator.of(context).pop();
@@ -30,6 +35,7 @@ class AppDrawer extends StatelessWidget {
             color: Colors.black,
           ),
           ListTile(
+            leading: Icon(Icons.logout, color: Theme.of(context).primaryColor),
             title: Text('Logout'),
             onTap: () {
               PhoneAuth.logout(context);
