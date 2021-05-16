@@ -32,7 +32,7 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             title: Text('Logout'),
             onTap: () {
-              PhoneAuth.logout();
+              PhoneAuth.logout(context);
             },
           ),
         ],

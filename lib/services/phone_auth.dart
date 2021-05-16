@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lets_connect/main.dart';
 
 class PhoneAuth {
   static final _auth = FirebaseAuth.instance;
@@ -49,9 +50,10 @@ class PhoneAuth {
     _login(context);
   }
 
-  static void logout() {
+  static void logout(BuildContext context) async {
     print('logout');
-    _auth.signOut();
+    await _auth.signOut();
+    Navigator.of(context).pushReplacementNamed(RoutingScreen.routeName);
   }
 
   static void _showSnackBarAndPopScreen(BuildContext context, String message) {
@@ -70,7 +72,8 @@ class PhoneAuth {
   static void _login(BuildContext context) {
     _auth
         .signInWithCredential(_phoneAuthcredential)
-        .then((userCredential) => Navigator.of(context).pop())
+        .then((value) =>
+            Navigator.of(context).pushReplacementNamed(RoutingScreen.routeName))
         .catchError((error) {
       _showSnackBarAndPopScreen(context, 'Verification Not Successful');
     });

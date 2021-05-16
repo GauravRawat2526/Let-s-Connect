@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import './screen/loadingScreen.dart';
 import './screen/login_screen.dart';
-import './services/firestore_service.dart';
-import './screen/chat_screen.dart';
-import './screen/input_user_data_screen.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import './screen/home_page.dart';
 
+BuildContext globalContext;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -36,42 +35,45 @@ class MyApp extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(20))))),
       ),
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (_, userSnapshot) {
-          if (userSnapshot.connectionState == ConnectionState.waiting) {
-            return LoadingScreen();
-          }
-          if (userSnapshot.hasData) {
-            return FutureBuilder(
-                future: FireStoreService.isUserExists(userSnapshot.data.uid),
-                builder: (_, isUserExistSnapShot) {
-                  if (isUserExistSnapShot.connectionState ==
-                      ConnectionState.waiting) return LoadingScreen();
-                  if (isUserExistSnapShot.data) return ChatScreen();
-                  return InputUserDataScreen(userSnapshot.data.uid);
-                });
-          }
-          return LoginScreen();
-        },
-      ),
-      // routes: {OtpVerifyScreen.routeName: (ctx) => OtpVerifyScreen()},
+      home: RoutingScreen(),
+      routes: {
+        RoutingScreen.routeName: (_) => RoutingScreen(),
+        LoginScreen.routeName: (_) => LoginScreen(),
+        HomePage.routeName: (_) => HomePage()
+      },
     );
   }
 }
 
-class LoadingScreen extends StatelessWidget {
-  const LoadingScreen({
+class RoutingScreen extends StatefulWidget {
+  static const routeName = '/RoutingScreen';
+  const RoutingScreen({
     Key key,
   }) : super(key: key);
 
   @override
+  _RoutingScreenState createState() => _RoutingScreenState();
+}
+
+class _RoutingScreenState extends State<RoutingScreen> {
+  @override
+  void initState() {
+    super.initState();
+    checkUser();
+  }
+
+  checkUser() async {
+    await Future.delayed(Duration(seconds: 1));
+    print(FirebaseAuth.instance.currentUser);
+    if (FirebaseAuth.instance.currentUser == null) {
+      Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+    } else {
+      Navigator.of(context).pushReplacementNamed(HomePage.routeName);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        SpinKitWave(color: Theme.of(context).primaryColor),
-        Text('Wait for a moment', style: Theme.of(context).textTheme.bodyText1)
-      ]),
-    );
+    return LoadingScreen();
   }
 }
