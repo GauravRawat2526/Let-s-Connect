@@ -11,12 +11,12 @@ import 'package:path/path.dart';
 import 'package:lets_connect/widgets/app_drawer.dart';
 //import 'package:toast/toast.dart';
 
-class Status extends StatefulWidget {
+class StatusScreen extends StatefulWidget {
   @override
-  _StatusState createState() => _StatusState();
+  _StatusScreenState createState() => _StatusScreenState();
 }
 
-class _StatusState extends State<Status> {
+class _StatusScreenState extends State<StatusScreen> {
   static final _firestore = FirebaseFirestore.instance;
   final fb=FirebaseDatabase.instance.reference().child('MyImages');
   final ImagePicker _picker = ImagePicker();

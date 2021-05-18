@@ -1,26 +1,30 @@
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:lets_connect/screen/onboarding_screen.dart';
-import 'package:lets_connect/services/firestore_service.dart';
-
 import '../services/phone_auth.dart';
 import '../screen/profile_screen.dart';
+import '../model/user_data.dart';
+import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   String ans;
   @override
   Widget build(BuildContext context) {
+    final userData = Provider.of<UserData>(context);
     return Drawer(
       child: ListView(
+        padding: EdgeInsets.only(top: 0),
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text('Dummy'),
-            accountEmail: Text('dummy@email.com'),
+            accountName: Text(userData.userName),
+            accountEmail: Text(userData.name),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('assets/images/holding_phone.png'),
+              backgroundImage: NetworkImage(userData.imageUrl),
             ),
           ),
           ListTile(
+            leading: Icon(
+              Icons.edit,
+              color: Theme.of(context).primaryColor,
+            ),
             title: Text('Edit Profile'),
             onTap: () {
               Navigator.of(context).pop();
@@ -34,27 +38,14 @@ class AppDrawer extends StatelessWidget {
             color: Colors.black,
           ),
           ListTile(
+            leading: Icon(Icons.logout, color: Theme.of(context).primaryColor),
             title: Text('Logout'),
             onTap: () {
-              PhoneAuth.logout();
-              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context)=>OnboardingScreen()));
+              PhoneAuth.logout(context);
             },
           ),
         ],
       ),
     );
-  }
-  Future<Widget> _getImage(BuildContext context,String imageName) async{
-    Image image;
-    await FireStorage.loadImage(context, imageName).then((value){
-      ans=value.toString();
-    });
-  }
-}
-
-class FireStorage extends ChangeNotifier{
-  FireStorage();
-  static Future<dynamic>loadImage(BuildContext context,String Image)async{
-    return await FirebaseStorage.instance.ref().child(Image).getDownloadURL();
   }
 }

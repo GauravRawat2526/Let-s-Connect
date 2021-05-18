@@ -1,4 +1,5 @@
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:lets_connect/screen/tabs_screen.dart';
 import 'package:lets_connect/services/firestore_service.dart';
 import 'package:path/path.dart';
 import 'dart:io';
@@ -7,33 +8,19 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lets_connect/services/blocs.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'chat_screen.dart';
-
-class Input extends StatelessWidget {
-  final String _userId;
-  Input(this._userId);
-  @override
-  Widget build(BuildContext context) {
-    return Provider(
-      create: (context)=>Blocs(),
-      child: Container(
-            child: InputUserDataScreen(_userId),
-      ),
-    );
-  }
-}
 
 class InputUserDataScreen extends StatefulWidget {
-  static String userId;
-  InputUserDataScreen(userId);
+  final String userId;
+  InputUserDataScreen(this.userId);
   @override
   _InputUserDataScreenState createState() => _InputUserDataScreenState();
 }
 
 class _InputUserDataScreenState extends State<InputUserDataScreen> {
-  String ans;
+  //String ans;
   File _imageFile;
   String _uploadFileURL;
+  bool loading=false;
   final ImagePicker _picker = ImagePicker();
   final _userName = new TextEditingController();
   final _fullName = new TextEditingController();
@@ -66,7 +53,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
             ConstrainedBox(
               constraints: BoxConstraints.tightFor(
                   width: mediaQuery.size.width, height: 50),
-              child: StreamBuilder<Object>(
+              child: loading ? CircularProgressIndicator() :  StreamBuilder<Object>(
                 stream: bloc.userValid,
                 builder: (context, snapshot) {
                   return ElevatedButton(
@@ -78,13 +65,15 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
                       ],
                     ),
                     onPressed: !snapshot.hasData?null:() async {
+                        setState(() => loading=true);
                         await uploadPic(context);
+                        setState(() => loading=false);
                         print(_uploadFileURL);
                         print('hello');
                         FireStoreService.addUser(_userName.text, _aboutUser.text,_fullName.text,_uploadFileURL);
-                        FireStoreService.addId(InputUserDataScreen.userId, _userName.text);
+                        FireStoreService.addId(widget.userId, _userName.text);
                         Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (ctx) => ChatScreen()));
+                            MaterialPageRoute(builder: (ctx) => TabsScreen()));
                     },
                   );
                 }
@@ -150,7 +139,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                FlatButton.icon(
+                TextButton.icon(
                   icon: Icon(Icons.camera),
                   onPressed: () {
                     takePhoto(ImageSource.camera);
@@ -160,7 +149,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
                         fontFamily: "Arial Rounded",
                       )),
                 ),
-                FlatButton.icon(
+                TextButton.icon(
                   icon: Icon(Icons.image),
                   onPressed: () {
                     takePhoto(ImageSource.gallery);

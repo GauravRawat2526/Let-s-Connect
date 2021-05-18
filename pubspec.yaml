@@ -29,7 +29,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   firebase_core: ^1.1.0
-  firebase_auth: ^1.1.4
+  firebase_auth: 
   pin_code_fields: ^7.1.0
   material_design_icons_flutter: ^4.0.5955
   cloud_firestore: ^2.1.0
@@ -43,6 +43,7 @@ dependencies:
   form_bloc: ^0.20.1
   flutter_form_bloc: ^0.20.1
   story_view: ^0.9.3
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
