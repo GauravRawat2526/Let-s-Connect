@@ -1,67 +1,91 @@
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:lets_connect/screen/tabs_screen.dart';
+import 'package:lets_connect/services/firestore_service.dart';
+import 'package:path/path.dart';
 import 'dart:io';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../services/firestore_service.dart';
-import './chat_screen.dart';
+import 'package:lets_connect/services/blocs.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class InputUserDataScreen extends StatefulWidget {
-  final String _userId;
-  InputUserDataScreen(this._userId);
+  final String userId;
+  InputUserDataScreen(this.userId);
   @override
   _InputUserDataScreenState createState() => _InputUserDataScreenState();
 }
 
 class _InputUserDataScreenState extends State<InputUserDataScreen> {
-  @override
-  PickedFile _imageFile;
+  //String ans;
+  File _imageFile;
+  String _uploadFileURL;
+  bool loading=false;
   final ImagePicker _picker = ImagePicker();
+  final _userName = new TextEditingController();
+  final _fullName = new TextEditingController();
+  final _aboutUser = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final bloc=Provider.of<Blocs>(context);
     return Scaffold(
-        body: Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 50,
-      ),
-      //padding: EdgeInsets.all(70.0),
-      child: ListView(
-        children: [
-          imageProfile(),
-          SizedBox(
-            height: 30,
-          ),
-          nametextField(),
-          SizedBox(
-            height: 30,
-          ),
-          aboutField(),
-          SizedBox(
-            height: 30,
-          ),
-          ConstrainedBox(
+          body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: ListView(
+          children: [
+            imageProfile(context),
+            SizedBox(
+              height: 20,
+            ),
+            nametextField(bloc),
+            SizedBox(
+              height: 20,
+            ),
+            fullNameField(bloc),
+            SizedBox(
+              height: 20,
+            ),
+            aboutField(bloc),
+            SizedBox(
+              height: 20,
+            ),
+            ConstrainedBox(
               constraints: BoxConstraints.tightFor(
                   width: mediaQuery.size.width, height: 50),
-              child: ElevatedButton(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Confirm', style: TextStyle(fontSize: 18)),
-                      Icon(Icons.navigate_next)
-                    ],
-                  ),
-                  onPressed: () {
-                    FireStoreService.addUser(widget._userId);
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (ctx) => ChatScreen()));
-                  })),
-        ],
+              child: loading ? CircularProgressIndicator() :  StreamBuilder<Object>(
+                stream: bloc.userValid,
+                builder: (context, snapshot) {
+                  return ElevatedButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Confirm', style: TextStyle(fontSize: 18)),
+                        Icon(Icons.navigate_next)
+                      ],
+                    ),
+                    onPressed: !snapshot.hasData?null:() async {
+                        setState(() => loading=true);
+                        await uploadPic(context);
+                        setState(() => loading=false);
+                        print(_uploadFileURL);
+                        print('hello');
+                        FireStoreService.addUser(_userName.text, _aboutUser.text,_fullName.text,_uploadFileURL);
+                        FireStoreService.addId(widget.userId, _userName.text);
+                        Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (ctx) => TabsScreen()));
+                    },
+                  );
+                }
+              ),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
-  Widget imageProfile() {
+  Widget imageProfile(BuildContext context) {
     return Center(
       child: Stack(
         children: <Widget>[
@@ -77,7 +101,8 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
             child: InkWell(
               onTap: () {
                 showModalBottomSheet(
-                    context: context, builder: ((builder) => bottomSheet()));
+                    context: context,
+                    builder: ((builder) => bottomSheet(context)));
               },
               child: Icon(
                 Icons.camera_alt,
@@ -91,7 +116,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
     );
   }
 
-  Widget bottomSheet() {
+  Widget bottomSheet(BuildContext context) {
     return Container(
         height: 100.0,
         width: MediaQuery.of(context).size.width,
@@ -141,60 +166,126 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
   }
 
   void takePhoto(ImageSource source) async {
-    final pickerFile = await _picker.getImage(source: source);
+    print(source);
+    final pickerFile = await _picker.getImage(source: source,imageQuality: 50);
     setState(() {
-      _imageFile = pickerFile;
+      _imageFile = File(pickerFile.path);
     });
   }
 
-  Widget nametextField() {
-    return TextFormField(
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.purple,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.purple,
-            width: 2,
-          ),
-        ),
-        prefixIcon: Icon(
-          Icons.person,
-          color: Colors.purple,
-        ),
-        labelText: "User Name",
-        helperText: "User Name can't empty",
-        hintText: "User Name",
-      ),
-    );
+  Widget nametextField(Blocs bloc) {
+        return StreamBuilder<Object>(
+          stream: bloc.userName,
+          builder: (context, snapshot) {
+            return TextFormField(
+              controller: _userName,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.purple,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.purple,
+                    width: 2,
+                  ),
+                ),
+                prefixIcon: Icon(
+                  Icons.person,
+                  color: Colors.purple,
+                ),
+                labelText: "User Name",
+                helperText: "User Name can't empty",
+                hintText: "User Name",
+                errorText: snapshot.error,
+              ),
+              onChanged: bloc.changeUserName,
+            );
+          }
+        );
   }
 
-  Widget aboutField() {
-    return TextFormField(
-      maxLines: 4,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.purple,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.purple,
-            width: 2,
-          ),
-        ),
-        prefixIcon: Icon(
-          MdiIcons.alertCircleOutline,
-          color: Colors.purple,
-        ),
-        labelText: "About",
-        helperText: "About field can't empty",
-        hintText: "About",
-      ),
-    );
+  Widget fullNameField(Blocs bloc) {
+        return StreamBuilder<Object>(
+          stream: bloc.fullName,
+          builder: (context, snapshot) {
+            return TextFormField(
+              controller: _fullName,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.purple,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.purple,
+                    width: 2,
+                  ),
+                ),
+                prefixIcon: Icon(
+                  Icons.person,
+                  color: Colors.purple,
+                ),
+                labelText: "Name",
+                helperText: "Name can't empty",
+                hintText: "Name",
+                errorText: snapshot.error,
+              ),
+              onChanged: bloc.changeFullName,
+            );
+          }
+        );
+    
+  }
+
+  Widget aboutField(Blocs bloc) {
+        return StreamBuilder<Object>(
+          stream: bloc.aboutUser,
+          builder: (context, snapshot) {
+            return TextFormField(
+              controller: _aboutUser,
+              maxLines: 4,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.purple,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.purple,
+                    width: 2,
+                  ),
+                ),
+                prefixIcon: Icon(
+                  MdiIcons.alertCircleOutline,
+                  color: Colors.purple,
+                ),
+                labelText: "About",
+                helperText: "About field can't empty",
+                hintText: "About",
+                errorText: snapshot.error,
+              ),
+              onChanged: bloc.changeAboutUser,
+            );
+          }
+        );
+
+  }
+  
+  Future uploadPic(BuildContext context) async {
+    try{
+    String fileName= basename(_imageFile.path);
+    Reference firebaseStorageRef =
+        FirebaseStorage.instance.ref().child(fileName);
+    UploadTask uploadTask = firebaseStorageRef.putFile(_imageFile);
+    var url=await(await uploadTask).ref.getDownloadURL();
+    _uploadFileURL=url.toString();
+    print(_uploadFileURL);
+    }catch(error){
+      print('null value');
+    }
   }
 }

@@ -14,6 +14,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Stream chatRoomStream;
   var isLoading = true;
   Widget chatRoomList() {
+    try{
     return StreamBuilder(
       stream: chatRoomStream,
       builder: (ctx, snapShot) {
@@ -35,7 +36,11 @@ class _ChatScreenState extends State<ChatScreen> {
               )
             : Container();
       },
-    );
+    );}
+      catch(error){
+        print('ayush');
+        return Container();
+      }
   }
 
   @override

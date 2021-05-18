@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import 'package:lets_connect/services/blocs.dart';
 import 'screen/onboarding_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,8 +21,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<UserData>(
-      create: (_) => UserData(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserData()),
+        Provider(create: (_) => Blocs())
+      ],
       child: MaterialApp(
         title: 'Let\'s Connect',
         debugShowCheckedModeBanner: false,
