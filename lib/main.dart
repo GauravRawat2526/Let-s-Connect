@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import './screen/loadingScreen.dart';
 import './screen/login_screen.dart';
 import './screen/home_page.dart';
+import 'package:provider/provider.dart';
+import 'model/user_data.dart';
 
 BuildContext globalContext;
 void main() async {
@@ -17,32 +19,35 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Let\'s Connect',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-        accentColor: Colors.blueAccent,
-        fontFamily: "Arial Rounded",
-        textTheme: ThemeData.light().textTheme.copyWith(
-              bodyText1: TextStyle(color: Colors.purple, fontSize: 18),
-              subtitle1: TextStyle(
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic),
-            ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20))))),
+    return ChangeNotifierProvider<UserData>(
+      create: (_) => UserData(),
+      child: MaterialApp(
+        title: 'Let\'s Connect',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.purple,
+          accentColor: Colors.blueAccent,
+          fontFamily: "Arial Rounded",
+          textTheme: ThemeData.light().textTheme.copyWith(
+                bodyText1: TextStyle(color: Colors.purple, fontSize: 18),
+                subtitle1: TextStyle(
+                    color: Colors.deepPurple,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic),
+              ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20))))),
+        ),
+        home: RoutingScreen(),
+        routes: {
+          RoutingScreen.routeName: (_) => RoutingScreen(),
+          LoginScreen.routeName: (_) => LoginScreen(),
+          HomePage.routeName: (_) => HomePage(),
+          OnboardingScreen.routeName: (_) => OnboardingScreen()
+        },
       ),
-      home: RoutingScreen(),
-      routes: {
-        RoutingScreen.routeName: (_) => RoutingScreen(),
-        LoginScreen.routeName: (_) => LoginScreen(),
-        HomePage.routeName: (_) => HomePage(),
-        OnboardingScreen.routeName: (_) => OnboardingScreen()
-      },
     );
   }
 }

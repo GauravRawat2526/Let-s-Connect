@@ -36,6 +36,7 @@ dependencies:
   flutter_spinkit: "^4.1.2"
   curved_navigation_bar: ^0.3.7
   image_picker: ^0.7.5
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:

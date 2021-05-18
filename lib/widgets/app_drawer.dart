@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 
 import '../services/phone_auth.dart';
 import '../screen/profile_screen.dart';
+import '../model/user_data.dart';
+import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final userData = Provider.of<UserData>(context);
     return Drawer(
       child: ListView(
         padding: EdgeInsets.only(top: 0),
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text('Dummy'),
-            accountEmail: Text('dummy@email.com'),
+            accountName: Text(userData.userName),
+            accountEmail: Text(userData.name),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('assets/images/holding_phone.png'),
+              backgroundImage: NetworkImage(userData.imageUrl),
             ),
           ),
           ListTile(
