@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screen/login_screen.dart';
+import 'login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -42,6 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             padding: const EdgeInsets.symmetric(vertical: 40.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(
                   alignment: Alignment.centerRight,
@@ -62,6 +63,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               : _currentPage == 1
                                   ? Colors.purple
                                   : Colors.blue[900],
+                          fontFamily: "Arial Rounded",
                           fontSize: 20.0),
                     ),
                   ),
@@ -76,6 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         _currentPage = page;
                       });
                     },
+                    
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.all(40.0),
@@ -151,20 +154,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     fontSize: 20,
                                     color: Colors.blue[900])),
                             SizedBox(height: 15.0),
-                            Text('show your creartivity with your friends',
+                            Text('show your creativity with your friends',
                                 style: TextStyle(
                                     fontFamily: "Arial Rounded",
                                     fontSize: 15,
                                     color: Colors.blue[900])),
+                                    
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: _buildPageIndicator(),
+                Container(
+                  //padding: const EdgeInsets.symmetric(vertical:20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: _buildPageIndicator(),
+                  ),
                 ),
                 _currentPage != _numPages - 1
                     ? Expanded(
@@ -177,28 +184,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 curve: Curves.ease,
                               );
                             },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Text(
-                                  'Next',
-                                  style: TextStyle(
+                            child: Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Text(
+                                    'Next',
+                                    style: TextStyle(
+                                      color: _currentPage == 0
+                                          ? Colors.deepOrange
+                                          : Colors.purple,
+                                      fontSize: 22.0,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.0),
+                                  Icon(
+                                    Icons.arrow_forward,
                                     color: _currentPage == 0
                                         ? Colors.deepOrange
                                         : Colors.purple,
-                                    fontSize: 22.0,
+                                    size: 30.0,
                                   ),
-                                ),
-                                SizedBox(width: 10.0),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: _currentPage == 0
-                                      ? Colors.deepOrange
-                                      : Colors.purple,
-                                  size: 30.0,
-                                ),
-                              ],
+                                ],
+                              ),
                             )),
                       ))
                     : Text(''),
@@ -226,13 +235,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           builder: (BuildContext context) =>
                               new LoginScreen()));
                 },
-                child: Center(
-                  child: Text(
-                    'Get Started',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
+                child: Container(
+                  margin: EdgeInsets.all(0),
+                  child: Center(
+                    child: Text(
+                      'Get Started',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontFamily: "Arial Rounded",
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

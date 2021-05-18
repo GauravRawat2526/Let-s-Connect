@@ -7,6 +7,10 @@ class PhoneAuth {
   static PhoneAuthCredential _phoneAuthcredential;
   static String _verificationId;
 
+  Future<String>getCurrentUserID() async {
+    return (await _auth.currentUser).uid;
+  }
+
   static void _verificationCompleted(PhoneAuthCredential phoneAuthCredential,
       TextEditingController pinOtp, BuildContext context) {
     _phoneAuthcredential = phoneAuthCredential;
@@ -46,16 +50,7 @@ class PhoneAuth {
   static void verifyOtp(String code, BuildContext context) async {
     _phoneAuthcredential = PhoneAuthProvider.credential(
         verificationId: _verificationId, smsCode: code);
-<<<<<<< HEAD
-    _auth
-        .signInWithCredential(_phoneAuthcredential)
-        .then((userCredential) => Navigator.of(context).pop())
-        .catchError((error) {
-      _showSnackBarAndPopScreen(context, 'Verification Not Successful');
-    });
-=======
     _login(context);
->>>>>>> 1cb81d9e0c6691ea6263e43c9b189b852976f944
   }
 
   static void logout() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'onboarding_screen.dart';
+import 'package:lets_connect/screen/status.dart';
+import 'screen/onboarding_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import './services/firestore_service.dart';
@@ -48,7 +49,8 @@ class MyApp extends StatelessWidget {
                   if (isUserExistSnapShot.connectionState ==
                       ConnectionState.waiting) return LoadingScreen();
                   if (isUserExistSnapShot.data) return ChatScreen();
-                  return InputUserDataScreen(userSnapshot.data.uid);
+                  //return Status();
+                  return Input(userSnapshot.data.uid);
                 });
           }
           return OnboardingScreen();
