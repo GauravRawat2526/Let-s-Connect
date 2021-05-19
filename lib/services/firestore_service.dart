@@ -9,15 +9,15 @@ class FireStoreService {
     return documentSnapshot.exists;
   }
 
-  static void addId(String userId, String userName) {
+  static Future addId(String userId, String userName) async {
     _firestore
         .collection('userIdAndName')
         .doc(userId)
         .set({'userName': userName});
   }
 
-  static void addUser(
-      String userName, String aboutUser, String fullName, String imagePath) {
+  static Future addUser(String userName, String aboutUser, String fullName,
+      String imagePath) async {
     print(imagePath);
     _firestore.collection('users').doc(userName).set({
       'userName': userName,

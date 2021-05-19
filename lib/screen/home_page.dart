@@ -9,6 +9,7 @@ class HomePage extends StatelessWidget {
   static const routeName = '/homepage';
   @override
   Widget build(BuildContext context) {
+    print(FirebaseAuth.instance.currentUser.uid);
     return FutureBuilder(
         future: FireStoreService.isUserExists(
             FirebaseAuth.instance.currentUser.uid),
