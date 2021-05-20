@@ -3,23 +3,19 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/chat_text_field.dart';
 import '../widgets/message_list.dart';
 
-class ConversationScreen extends StatefulWidget {
-  final String userName;
-  final String aboutUser;
+class GroupConversationScreen extends StatefulWidget {
+  final String groupName;
   final String imageUrl;
-  final String name;
-  final String chatRoomId;
-  ConversationScreen(
-      {@required this.aboutUser,
+  final users;
+  GroupConversationScreen(
+      {@required this.groupName,
       @required this.imageUrl,
-      @required this.name,
-      @required this.userName,
-      @required this.chatRoomId});
-  @override
-  _ConversationScreenState createState() => _ConversationScreenState();
+      @required this.users});
+  _GroupConversationScreenState createState() =>
+      _GroupConversationScreenState();
 }
 
-class _ConversationScreenState extends State<ConversationScreen> {
+class _GroupConversationScreenState extends State<GroupConversationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +26,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               backgroundImage: NetworkImage(widget.imageUrl),
             )
           ],
-          title: Text(widget.userName),
+          title: Text(widget.groupName),
         ),
         onTap: () => print('appBar'),
       ),
@@ -38,8 +34,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
         children: [
           Expanded(
               child: MessageList(
-                  collectionName: 'ChatRoom', chatRoomId: widget.chatRoomId)),
-          ChatTextField(collection: 'ChatRoom', chatRoomId: widget.chatRoomId)
+                  collectionName: 'GroupChatRoom',
+                  chatRoomId: widget.groupName)),
+          ChatTextField(
+              collection: 'GroupChatRoom', chatRoomId: widget.groupName)
         ],
       ),
     );

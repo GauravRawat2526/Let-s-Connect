@@ -47,27 +47,46 @@ class FireStoreService {
         .set(chatRoomMap);
   }
 
-  static getChatRooms(String userName) async {
+  static getChatRooms(String room, String userName) async {
     return _firestore
-        .collection('ChatRoom')
+        .collection(room)
         .where("users", arrayContains: userName)
         .snapshots();
   }
 
-  static addConversationMessages(String chatRoomId, messageMap) async {
+  static addConversationMessages(
+      String collection, String chatRoomId, messageMap) async {
     _firestore
-        .collection('ChatRoom')
+        .collection(collection)
         .doc(chatRoomId)
         .collection('chats')
         .add(messageMap);
   }
 
-  static getStreamTomessages(String chatRoomId) async {
+  static getStreamTomessages(String collectionName, String chatRoomId) async {
     return _firestore
-        .collection('ChatRoom')
+        .collection(collectionName)
         .doc(chatRoomId)
         .collection('chats')
         .orderBy('createdAt', descending: true)
         .snapshots();
+  }
+
+  static Future<QuerySnapshot<Map<String, dynamic>>> getCollection(
+      collectionName, String notIncludeMyName) async {
+    return await _firestore
+        .collection(collectionName)
+        .where('userName', isNotEqualTo: notIncludeMyName)
+        .get();
+  }
+
+  static Future createGroupChatRoom(String groupName, map) async {
+    await _firestore.collection('GroupChatRoom').doc(groupName).set(map);
+  }
+
+  static Future<bool> isGroupExist(String groupName) async {
+    final document =
+        await _firestore.collection('GroupChatRoom').doc(groupName).get();
+    return document.exists;
   }
 }

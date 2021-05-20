@@ -7,7 +7,8 @@ import 'package:provider/provider.dart';
 
 class ChatTextField extends StatefulWidget {
   final String chatRoomId;
-  ChatTextField(this.chatRoomId);
+  final String collection;
+  ChatTextField({this.chatRoomId, this.collection});
   @override
   _ChatTextFieldState createState() => _ChatTextFieldState();
 }
@@ -18,7 +19,8 @@ class _ChatTextFieldState extends State<ChatTextField> {
 
   void _sendMessage() async {
     try {
-      FireStoreService.addConversationMessages(widget.chatRoomId, {
+      FireStoreService.addConversationMessages(
+          widget.collection, widget.chatRoomId, {
         'message': _textController.text.trim(),
         'sentBy': Provider.of<UserData>(context, listen: false).userName,
         'createdAt': Timestamp.now()

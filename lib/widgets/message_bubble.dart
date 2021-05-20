@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class MessageBubble extends StatelessWidget {
   final _message;
   final isMe;
   final key;
   final userName;
-  MessageBubble(this._message, this.isMe, this.userName, {this.key});
+  final Timestamp createdAt;
+  MessageBubble(this._message, this.isMe, this.userName, this.createdAt,
+      {this.key});
   @override
   Widget build(BuildContext context) {
+    final time = DateFormat.Hm().format(createdAt.toDate());
     return Row(
         key: key,
+        crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment:
             isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
+          if (!isMe) Text(time, style: TextStyle(fontSize: 11)),
           Container(
               margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -25,7 +32,8 @@ class MessageBubble extends StatelessWidget {
                           isMe ? Radius.circular(20) : Radius.circular(0),
                       bottomRight:
                           isMe ? Radius.circular(0) : Radius.circular(20))),
-              constraints: BoxConstraints(minHeight: 50, maxWidth: 240),
+              constraints:
+                  BoxConstraints(minHeight: 50, maxWidth: 240, minWidth: 100),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -40,6 +48,11 @@ class MessageBubble extends StatelessWidget {
                       style: TextStyle(color: Colors.white),
                     ),
                   ])),
+          if (isMe)
+            Text(
+              time,
+              style: TextStyle(fontSize: 11),
+            ),
         ]);
   }
 }
