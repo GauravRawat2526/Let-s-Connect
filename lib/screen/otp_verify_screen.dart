@@ -11,8 +11,7 @@ class OtpVerifyScreen extends StatefulWidget {
   _OtpVerifyScreenState createState() => _OtpVerifyScreenState();
 }
 
-class 
-_OtpVerifyScreenState extends State<OtpVerifyScreen> {
+class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
   final _textController = TextEditingController();
 
   @override
@@ -78,7 +77,6 @@ _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                     ],
                   ),
                   onPressed: () {
-                    //Navigator.of(context).pop();
                     PhoneAuth.verifyOtp(_textController.text, context);
                   },
                 ))

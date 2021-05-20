@@ -11,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../model/user_data.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import './groups_chat_screen.dart';
 
 class TabsScreen extends StatefulWidget {
   @override
@@ -25,8 +26,9 @@ class _TabsScreenState extends State<TabsScreen> {
   void initState() {
     _scrAndName = [
       {'screen': ChatScreen(), 'name': 'Categories'},
+      {'screen': GroupsChatScreen(), 'name': 'GroupsChatScreen'},
       {'screen': SearchScreen(), 'name': 'Favourites'},
-      {'screen': StatusScreen(), 'name': 'StatusScreen'}
+      {'screen': StatusScreen(), 'name': 'StatusScreen'},
     ];
     getUserName().then((userName) {
       print(userName);
@@ -79,6 +81,10 @@ class _TabsScreenState extends State<TabsScreen> {
           items: [
             Icon(
               MdiIcons.commentTextMultiple,
+              color: Colors.white,
+            ),
+            Icon(
+              Icons.group,
               color: Colors.white,
             ),
             Icon(
