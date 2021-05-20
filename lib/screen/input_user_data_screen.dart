@@ -53,7 +53,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
             ConstrainedBox(
               constraints: BoxConstraints.tightFor(
                   width: mediaQuery.size.width, height: 50),
-              child: loading ? CircularProgressIndicator() :  StreamBuilder<Object>(
+              child: StreamBuilder<Object>(
                 stream: bloc.userValid,
                 builder: (context, snapshot) {
                   return ElevatedButton(
@@ -65,9 +65,9 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
                       ],
                     ),
                     onPressed: !snapshot.hasData?null:() async {
-                        setState(() => loading=true);
+                        //setState(() => loading=true);
                         await uploadPic(context);
-                        setState(() => loading=false);
+                       // setState(() => loading=false);
                         print(_uploadFileURL);
                         print('hello');
                         FireStoreService.addUser(_userName.text, _aboutUser.text,_fullName.text,_uploadFileURL);

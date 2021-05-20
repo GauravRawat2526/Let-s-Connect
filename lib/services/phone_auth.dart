@@ -8,10 +8,6 @@ class PhoneAuth {
   static PhoneAuthCredential _phoneAuthcredential;
   static String _verificationId;
 
-  Future<String>getCurrentUserID() async {
-    return (await _auth.currentUser).uid;
-  }
-
   static void _verificationCompleted(PhoneAuthCredential phoneAuthCredential,
       TextEditingController pinOtp, BuildContext context) {
     _phoneAuthcredential = phoneAuthCredential;

@@ -78,7 +78,7 @@ _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                     ],
                   ),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    //Navigator.of(context).pop();
                     PhoneAuth.verifyOtp(_textController.text, context);
                   },
                 ))
