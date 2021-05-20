@@ -1,7 +1,6 @@
 
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:form_bloc/form_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -16,6 +15,7 @@ class Blocs{
   Stream<String> get aboutUser=>_aboutUser.stream.transform(validateAboutUser);
   Stream<String> get fullName =>_fullName.stream.transform(validateFullName);
   Stream<bool> get userValid => Rx.combineLatest3(userName, aboutUser, fullName, (userName, aboutUser, fullName) => true);
+  Stream<bool> get changeValid => Rx.combineLatest2(aboutUser, fullName, (aboutUser, fullName) => true);
   
   //Set
   Function(String) get changeUserName => _userName.sink.add;
