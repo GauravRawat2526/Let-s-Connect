@@ -30,55 +30,6 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
     final mediaQuery = MediaQuery.of(context);
     final bloc = Provider.of<Blocs>(context);
     return Scaffold(
-<<<<<<< HEAD
-          body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: ListView(
-          children: [
-            imageProfile(context),
-            SizedBox(
-              height: 20,
-            ),
-            nametextField(bloc),
-            SizedBox(
-              height: 20,
-            ),
-            fullNameField(bloc),
-            SizedBox(
-              height: 20,
-            ),
-            aboutField(bloc),
-            SizedBox(
-              height: 20,
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints.tightFor(
-                  width: mediaQuery.size.width, height: 50),
-              child: StreamBuilder<Object>(
-                stream: bloc.userValid,
-                builder: (context, snapshot) {
-                  return ElevatedButton(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Confirm', style: TextStyle(fontSize: 18)),
-                        Icon(Icons.navigate_next)
-                      ],
-                    ),
-                    onPressed: !snapshot.hasData?null:() async {
-                        //setState(() => loading=true);
-                        await uploadPic(context);
-                       // setState(() => loading=false);
-                        print(_uploadFileURL);
-                        print('hello');
-                        FireStoreService.addUser(_userName.text, _aboutUser.text,_fullName.text,_uploadFileURL);
-                        FireStoreService.addId(widget.userId, _userName.text);
-                        Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (ctx) => TabsScreen()));
-                    },
-                  );
-                }
-=======
       body: Stack(children: [
         Padding(
           padding: const EdgeInsets.all(20.0),
@@ -87,7 +38,6 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
               imageProfile(context),
               SizedBox(
                 height: 20,
->>>>>>> 1d4c243e9dc5fcc94c350e71eddf14107fdc8fe9
               ),
               nametextField(bloc),
               SizedBox(
