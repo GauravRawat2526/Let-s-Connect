@@ -25,7 +25,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _aboutUser = new TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
     final bloc = Provider.of<Blocs>(context);
     final userData = Provider.of<UserData>(context);
     _uploadFileURL = userData.imageUrl;
