@@ -16,6 +16,7 @@ class Blocs{
   Stream<String> get fullName =>_fullName.stream.transform(validateFullName);
   Stream<bool> get userValid => Rx.combineLatest3(userName, aboutUser, fullName, (userName, aboutUser, fullName) => true);
   Stream<bool> get changeValid => Rx.combineLatest2(aboutUser, fullName, (aboutUser, fullName) => true);
+  //Stream<bool> get invalidName =>Rx.combineLatest( fullName, (fullName) => null);
   
   //Set
   Function(String) get changeUserName => _userName.sink.add;

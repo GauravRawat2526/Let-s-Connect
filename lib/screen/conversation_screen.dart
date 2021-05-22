@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_connect/widgets/sender_profile.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/chat_text_field.dart';
 import '../widgets/message_list.dart';
@@ -32,7 +33,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
           ],
           title: Text(widget.userName),
         ),
-        onTap: () => print('appBar'),
+        onTap: () {
+          setState(() {
+            Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (ctx) => SenderProfile(aboutUser: widget.aboutUser, imageUrl: widget.imageUrl, name: widget.name, userName: widget.userName)));
+          });
+        },
       ),
       body: Column(
         children: [
@@ -44,4 +50,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
     );
   }
+
+  Widget senderProfile()
+  {
+    
+  }
 }
+
+
