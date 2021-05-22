@@ -75,9 +75,10 @@ class _ChatTextFieldState extends State<ChatTextField> {
 
   bottomSheet(BuildContext context) {
     showBottomSheet(
+      backgroundColor: Theme.of(context).primaryColorLight,
       context: context,
       builder: (ctx) => Container(
-          height: 100.0,
+          height: 150.0,
           width: MediaQuery.of(context).size.width,
           margin: EdgeInsets.symmetric(
             horizontal: 20,
@@ -85,41 +86,61 @@ class _ChatTextFieldState extends State<ChatTextField> {
           ),
           child: Column(
             children: <Widget>[
-              Text(
-                'Choose Profile photo',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontFamily: "Arial Rounded",
+              Container(
+                child: GestureDetector(
+                  child: Text(
+                    'Send Doodle',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      color: Theme.of(context).primaryColor,
+                      fontFamily: "Arial Rounded",
+                    ),
+                  ),
+                  onTap: () => print(''),
                 ),
               ),
-              SizedBox(
-                height: 20,
+              Divider(color: Colors.black),
+              Container(
+                child: Column(
+                  children: [
+                    Text(
+                      'Send Image',
+                      style: TextStyle(
+                          fontSize: 20.0,
+                          fontFamily: "Arial Rounded",
+                          color: Theme.of(context).primaryColor),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        TextButton.icon(
+                          icon: Icon(Icons.camera),
+                          onPressed: () {
+                            takePhoto(ImageSource.camera, context);
+                          },
+                          label: Text('Camera',
+                              style: TextStyle(
+                                fontFamily: "Arial Rounded",
+                              )),
+                        ),
+                        TextButton.icon(
+                          icon: Icon(Icons.image),
+                          onPressed: () {
+                            takePhoto(ImageSource.gallery, context);
+                          },
+                          label: Text('Gallery',
+                              style: TextStyle(
+                                fontFamily: "Arial Rounded",
+                              )),
+                        )
+                      ],
+                    )
+                  ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  TextButton.icon(
-                    icon: Icon(Icons.camera),
-                    onPressed: () {
-                      takePhoto(ImageSource.camera, context);
-                    },
-                    label: Text('Camera',
-                        style: TextStyle(
-                          fontFamily: "Arial Rounded",
-                        )),
-                  ),
-                  TextButton.icon(
-                    icon: Icon(Icons.image),
-                    onPressed: () {
-                      takePhoto(ImageSource.gallery, context);
-                    },
-                    label: Text('Gallery',
-                        style: TextStyle(
-                          fontFamily: "Arial Rounded",
-                        )),
-                  )
-                ],
-              )
             ],
           )),
     );
@@ -152,9 +173,7 @@ class _ChatTextFieldState extends State<ChatTextField> {
           ),
           IconButton(
               color: Theme.of(context).primaryColorLight,
-              icon: isLoading
-                  ? CircularProgressIndicator()
-                  : Icon(Icons.camera_alt),
+              icon: isLoading ? CircularProgressIndicator() : Icon(Icons.image),
               onPressed: () => bottomSheet(context)),
           IconButton(
               color: Theme.of(context).primaryColorLight,
