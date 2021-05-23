@@ -102,7 +102,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
           CircleAvatar(
             radius: 80.0,
             backgroundImage: _imageFile == null
-                ? AssetImage('assets/images/holding_phone.png')
+                ? AssetImage('assets/images/userProfile.png')
                 : FileImage(File(_imageFile.path)),
           ),
           Positioned(
@@ -290,7 +290,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
       _uploadFileURL = url.toString();
       print(_uploadFileURL);
     } catch (error) {
-      print('null value');
+      _uploadFileURL='https://img.icons8.com/officel/2x/person-male.png';
     }
   }
 }

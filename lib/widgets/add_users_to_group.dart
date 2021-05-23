@@ -1,7 +1,11 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../services/firestore_service.dart';
 import '../model/user_data.dart';
 import 'package:provider/provider.dart';
+
 
 class AddUsersToGroup extends StatefulWidget {
   AddUsersToGroup({Key key}) : super(key: key);
@@ -16,7 +20,10 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
   var isLoading = true;
   final _formKey = GlobalKey<FormState>();
   var groupName;
+  String _uploadFileURL;
   bool alreadyExists = false;
+  File _imageFile;
+  final ImagePicker _picker = ImagePicker();
   @override
   void initState() {
     final myName = Provider.of<UserData>(context, listen: false).userName;
@@ -56,8 +63,7 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
     Map<String, dynamic> data = {
       'groupName': groupName,
       'users': usersToAddInGroup,
-      'imageUrl':
-          'https://firebasestorage.googleapis.com/v0/b/let-s-connect-c92a2.appspot.com/o/scaled_image_picker8861404749849128044.jpg?alt=media&token=0b8a2615-5507-4a19-ab14-d8b7ba17d3c4',
+      'imageUrl':_uploadFileURL,
     };
     setState(() {
       isLoading = true;
@@ -71,70 +77,182 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          child: Row(
-            children: [
-              Expanded(
-                child: Form(
-                  key: _formKey,
-                  child: TextFormField(
-                      validator: (value) {
-                        if (value.length < 3) {
-                          return 'Group Name too short';
-                        }
-                        if (alreadyExists) {
-                          return 'Group Name already exists';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        groupName = value;
-                      },
-                      autocorrect: false,
-                      keyboardType: TextInputType.name,
-                      decoration: InputDecoration(
-                        hintText: 'Enter Group Name....',
-                        hintStyle: Theme.of(context).textTheme.bodyText1,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                          borderSide: BorderSide(
-                              color: Theme.of(context).primaryColorLight,
-                              width: 2),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                          borderSide:
-                              BorderSide(color: Theme.of(context).primaryColor),
-                        ),
-                      )),
+    return Container(
+      height: 425,
+      child: Column(
+        children: [
+          SizedBox(height: 10,),
+          imageProfile(context),
+          //SizedBox(height: 10,),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Form(
+                    key: _formKey,
+                    child: TextFormField(
+                        validator: (value) {
+                          if (value.length < 3) {
+                            return 'Group Name too short';
+                          }
+                          if (alreadyExists) {
+                            return 'Group Name already exists';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          groupName = value;
+                        },
+                        autocorrect: false,
+                        keyboardType: TextInputType.name,
+                        decoration: InputDecoration(
+                          hintText: 'Enter Group Name....',
+                          hintStyle: Theme.of(context).textTheme.bodyText1,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderSide: BorderSide(
+                                color: Theme.of(context).primaryColorLight,
+                                width: 2),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                            borderSide:
+                                BorderSide(color: Theme.of(context).primaryColor),
+                          ),
+                        )),
+                  ),
                 ),
-              ),
-              TextButton(onPressed: createGroupChatRoom, child: Icon(Icons.add))
-            ],
+                TextButton(onPressed: () async{
+                  await uploadPic(context);
+                  createGroupChatRoom();
+                  }, child: Icon(Icons.add))
+              ],
+            ),
           ),
-        ),
-        isLoading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Expanded(
-                child: ListView.builder(
-                    itemCount: querySnapshot.docs.length,
-                    itemBuilder: (ctx, index) {
-                      return AddGroupTile(
-                        userName: querySnapshot.docs[index]['userName'],
-                        name: querySnapshot.docs[index]['name'],
-                        imageUrl: querySnapshot.docs[index]['imageUrl'],
-                        addUser: addUser,
-                        removerUser: removeUser,
-                      );
-                    }))
-      ],
+          isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Expanded(
+                  child: ListView.builder(
+                      itemCount: querySnapshot.docs.length,
+                      itemBuilder: (ctx, index) {
+                        return AddGroupTile(
+                          userName: querySnapshot.docs[index]['userName'],
+                          name: querySnapshot.docs[index]['name'],
+                          imageUrl: querySnapshot.docs[index]['imageUrl'],
+                          addUser: addUser,
+                          removerUser: removeUser,
+                        );
+                      }))
+        ],
+      ),
     );
   }
+  Widget imageProfile(BuildContext context,) {
+    return Center(
+      child: Stack(
+        children: <Widget>[
+          CircleAvatar(
+            radius: 60.0,
+            backgroundImage: _imageFile == null
+                ? AssetImage('assets/images/groupProfile.png')
+                : FileImage(File(_imageFile.path)),
+          ),
+          Positioned(
+            bottom: 15.0,
+            right: 15.0,
+            child: InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                    context: context,
+                    builder: ((builder) => bottomSheet(context)));
+              },
+              child: Icon(
+                Icons.camera_alt,
+                color: Colors.white,
+                size: 28.0,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget bottomSheet(BuildContext context) {
+    return Container(
+        height: 100.0,
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 20,
+        ),
+        child: Column(
+          children: <Widget>[
+            Text(
+              'Choose Profile photo',
+              style: TextStyle(
+                fontSize: 20.0,
+                fontFamily: "Arial Rounded",
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                TextButton.icon(
+                  icon: Icon(Icons.camera),
+                  onPressed: () {
+                    takePhoto(ImageSource.camera);
+                  },
+                  label: Text('Camera',
+                      style: TextStyle(
+                        fontFamily: "Arial Rounded",
+                      )),
+                ),
+                TextButton.icon(
+                  icon: Icon(Icons.image),
+                  onPressed: () {
+                    takePhoto(ImageSource.gallery);
+                  },
+                  label: Text('Gallery',
+                      style: TextStyle(
+                        fontFamily: "Arial Rounded",
+                      )),
+                )
+              ],
+            )
+          ],
+        ));
+  }
+
+  void takePhoto(ImageSource source) async {
+    print(source);
+    final pickerFile = await _picker.getImage(source: source, imageQuality: 50);
+    setState(() {
+      _imageFile = File(pickerFile.path);
+    });
+  }
+
+  Future uploadPic(BuildContext context) async {
+    try {
+      print('why');
+      String fileName = _imageFile.path.split('/').last;
+      Reference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child(fileName);
+      UploadTask uploadTask = firebaseStorageRef.putFile(_imageFile);
+      var url = await (await uploadTask).ref.getDownloadURL();
+      _uploadFileURL = url.toString();
+      print(_uploadFileURL);
+    } catch (error) {
+      _uploadFileURL='https://image.flaticon.com/icons/png/128/166/166258.png';
+    }
+  }
+
 }
 
 class AddGroupTile extends StatefulWidget {

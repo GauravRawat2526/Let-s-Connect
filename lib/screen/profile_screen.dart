@@ -25,6 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _aboutUser = new TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
     final bloc = Provider.of<Blocs>(context);
     final userData = Provider.of<UserData>(context);
     _uploadFileURL = userData.imageUrl;
@@ -87,7 +88,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ConstrainedBox(
                       constraints:
                           BoxConstraints.tightFor(width: 160, height: 40),
-                      child: ElevatedButton(
+                      child: loading ?
+                        Center(child: CircularProgressIndicator(),):
+                        ElevatedButton(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -100,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                         onPressed: () async {
-                          //setState(() => loading=true);
+                          setState(() => loading=true);
                           await uploadPic(context, userData);
                           // setState(() => loading=false);
                           print(_uploadFileURL);
@@ -112,9 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               _fullName.text, _uploadFileURL, _aboutUser.text);
                           FireStoreService.addUser(userData.userName,
                               _aboutUser.text, _fullName.text, _uploadFileURL);
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (ctx) => ProfileScreen()));
+                          setState(() => loading=false);
                           ShowToastNow();
                         },
                       ),
@@ -137,27 +138,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 width: 20.0,
                               ),
                               Container(
-                                  child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Text("User Name",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                          color: Colors.blueGrey,
-                                          fontFamily: "Arial Rounded",
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18.0)),
-                                  Text(userData.userName,
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        color: Colors.blueAccent,
+                                child: Text("User Name\n${userData.userName}",
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                        color: Colors.blueGrey,
                                         fontFamily: "Arial Rounded",
                                         fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.italic,
-                                        fontSize: 18.0,
-                                      )),
-                                ],
-                              )),
+                                        fontSize: 18.0)),
+                              ),
                             ],
                           ),
                         ),
@@ -180,37 +168,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Row(
                             children: [
                               Icon(
-                                Icons.person,
+                                Icons.perm_contact_cal_rounded,
                                 color: Colors.purple,
                               ),
                               SizedBox(
                                 width: 20.0,
                               ),
                               Container(
-                                  child: Column(
-                                children: <Widget>[
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Name",
-                                        style: TextStyle(
-                                            color: Colors.blueGrey,
-                                            fontFamily: "Arial Rounded",
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18.0)),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(userData.name,
-                                        style: TextStyle(
-                                          color: Colors.blueAccent,
-                                          fontFamily: "Arial Rounded",
-                                          fontWeight: FontWeight.bold,
-                                          fontStyle: FontStyle.italic,
-                                          fontSize: 18.0,
-                                        )),
-                                  ),
-                                ],
-                              )),
+                                child: Text("Name\n${userData.name}",
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                        color: Colors.blueGrey,
+                                        fontFamily: "Arial Rounded",
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0)),
+                              ),
                             ],
                           ),
                         ),
@@ -256,30 +228,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 width: 20.0,
                               ),
                               Container(
-                                child: Column(
-                                  children: <Widget>[
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text("About",
-                                          style: TextStyle(
-                                              fontFamily: "Arial Rounded",
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.blueGrey,
-                                              fontSize: 18.0)),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(userData.aboutUser,
-                                          style: TextStyle(
-                                            color: Colors.blueAccent,
-                                            fontFamily: "Arial Rounded",
-                                            fontStyle: FontStyle.italic,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18.0,
-                                          )),
-                                    ),
-                                  ],
-                                ),
+                                child: Text("About\n${userData.aboutUser}",
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                        color: Colors.blueGrey,
+                                        fontFamily: "Arial Rounded",
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0)),
                               ),
                             ],
                           ),
@@ -331,39 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               height: 20,
             ),
-            aboutField(bloc),
-            SizedBox(
-              height: 20,
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints.tightFor(width: 140, height: 50),
-              child: ElevatedButton(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Confirm', style: TextStyle(fontSize: 18)),
-                    Icon(Icons.navigate_next)
-                  ],
-                ),
-                onPressed: () {
-                  //setState(() => loading=true);
-                  // await uploadPic(context,userData);
-                  // setState(() => loading=false);
-                  print(_uploadFileURL);
-                  print('hello');
-                  print(userData.userName);
-                  print(_aboutUser.text);
-                  print(_fullName.text);
-                  userData.setUserData(userData.userName, _fullName.text,
-                      _uploadFileURL, _aboutUser.text);
-                  FireStoreService.addUser(userData.userName, _aboutUser.text,
-                      _fullName.text, _uploadFileURL);
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (ctx) => ProfileScreen()));
-                  ShowToastNow();
-                },
-              ),
-            ),
+            aboutField(bloc, userData),
           ],
         ));
   }
@@ -388,104 +311,170 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               height: 20,
             ),
-            nametextField(bloc),
-            SizedBox(
-              height: 20,
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints.tightFor(width: 140, height: 50),
-              child: ElevatedButton(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Confirm', style: TextStyle(fontSize: 18)),
-                    Icon(Icons.navigate_next)
-                  ],
-                ),
-                onPressed: () {
-                  //setState(() => loading=true);
-                  //await uploadPic(context,userData);
-                  // setState(() => loading=false);
-                  print(_uploadFileURL);
-                  print('hello');
-                  print(userData.userName);
-                  print(_aboutUser.text);
-                  print(_fullName.text);
-                  userData.setUserData(userData.userName, _fullName.text,
-                      _uploadFileURL, _aboutUser.text);
-                  FireStoreService.addUser(userData.userName, _aboutUser.text,
-                      _fullName.text, _uploadFileURL);
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (ctx) => ProfileScreen()));
-                  ShowToastNow();
-                },
-              ),
-            ),
+            nametextField(bloc, userData),
           ],
         ));
   }
 
-  Widget nametextField(Blocs bloc) {
+  Widget nametextField(Blocs bloc, UserData userData) {
     return StreamBuilder<Object>(
         stream: bloc.fullName,
         builder: (context, snapshot) {
-          return TextFormField(
-            controller: _fullName,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.purple,
+          return Column(
+            children: [
+              Container(
+                child: TextFormField(
+                  controller: _fullName,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.purple,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.purple,
+                        width: 2,
+                      ),
+                    ),
+                    prefixIcon: Icon(
+                      Icons.person,
+                      color: Colors.purple,
+                    ),
+                    labelText: "Name",
+                    //helperText: "User Name can't empty",
+                    hintText: "Name",
+                    errorText: snapshot.error,
+                  ),
+                  onChanged: bloc.changeFullName,
                 ),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.purple,
-                  width: 2,
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints.tightFor(width: 140, height: 50),
+                  child: ElevatedButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Confirm', style: TextStyle(fontSize: 18)),
+                        Icon(Icons.navigate_next)
+                      ],
+                    ),
+                    onPressed: snapshot.hasError
+                        ? null
+                        : () {
+                            //setState(() => loading=true);
+                            //await uploadPic(context,userData);
+                            // setState(() => loading=false);
+                            print(_uploadFileURL);
+                            print('hello');
+                            print(userData.userName);
+                            print(_aboutUser.text);
+                            print(_fullName.text);
+                            userData.setUserData(
+                                userData.userName,
+                                _fullName.text,
+                                _uploadFileURL,
+                                _aboutUser.text);
+                            FireStoreService.addUser(
+                                userData.userName,
+                                _aboutUser.text,
+                                _fullName.text,
+                                _uploadFileURL);
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (ctx) => ProfileScreen()));
+                            ShowToastNow();
+                          },
+                  ),
                 ),
               ),
-              prefixIcon: Icon(
-                Icons.person,
-                color: Colors.purple,
-              ),
-              labelText: "Name",
-              //helperText: "User Name can't empty",
-              hintText: "Name",
-              errorText: snapshot.error,
-            ),
-            onChanged: bloc.changeFullName,
+            ],
           );
         });
   }
 
-  Widget aboutField(Blocs bloc) {
+  Widget aboutField(Blocs bloc, UserData userData) {
     return StreamBuilder<Object>(
         stream: bloc.aboutUser,
         builder: (context, snapshot) {
-          return TextFormField(
-            controller: _aboutUser,
-            maxLines: 4,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.purple,
+          return Column(
+            children: [
+              Container(
+                child: TextFormField(
+                  controller: _aboutUser,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.purple,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.purple,
+                        width: 2,
+                      ),
+                    ),
+                    prefixIcon: Icon(
+                      MdiIcons.alertCircleOutline,
+                      color: Colors.purple,
+                    ),
+                    labelText: "About",
+                    //helperText: "About field can't empty",
+                    hintText: "About",
+                    errorText: snapshot.error,
+                  ),
+                  onChanged: bloc.changeAboutUser,
                 ),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.purple,
-                  width: 2,
+              SizedBox(
+                height: 20.0,
+              ),
+              Container(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints.tightFor(width: 140, height: 50),
+                  child: ElevatedButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Confirm', style: TextStyle(fontSize: 18)),
+                        Icon(Icons.navigate_next)
+                      ],
+                    ),
+                    onPressed: snapshot.hasError
+                        ? null
+                        : () {
+                            //setState(() => loading=true);
+                            // await uploadPic(context,userData);
+                            // setState(() => loading=false);
+                            print(_uploadFileURL);
+                            print('hello');
+                            print(userData.userName);
+                            print(_aboutUser.text);
+                            print(_fullName.text);
+                            userData.setUserData(
+                                userData.userName,
+                                _fullName.text,
+                                _uploadFileURL,
+                                _aboutUser.text);
+                            FireStoreService.addUser(
+                                userData.userName,
+                                _aboutUser.text,
+                                _fullName.text,
+                                _uploadFileURL);
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (ctx) => ProfileScreen()));
+                            ShowToastNow();
+                          },
+                  ),
                 ),
               ),
-              prefixIcon: Icon(
-                MdiIcons.alertCircleOutline,
-                color: Colors.purple,
-              ),
-              labelText: "About",
-              //helperText: "About field can't empty",
-              hintText: "About",
-              errorText: snapshot.error,
-            ),
-            onChanged: bloc.changeAboutUser,
+            ],
           );
         });
   }
@@ -545,6 +534,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _imageFile = File(pickerFile.path);
     });
+    print(_imageFile);
+    print(_imageFile.path);
   }
 
   Future uploadPic(BuildContext context, UserData userData) async {
@@ -570,143 +561,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
         gravity: ToastGravity.BOTTOM);
   }
 }
-
-// import 'package:flutter/material.dart';
-
-// class ProfileScreen extends StatefulWidget {
-//   @override
-//   _ProfileScreenState createState() => _ProfileScreenState();
-// }
-
-// class _ProfileScreenState extends State<ProfileScreen> {
-//   bool isObscurePassword = true;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Container(
-//         padding: EdgeInsets.only(left: 15, top: 20, right: 15),
-//         child: GestureDetector(
-//           onTap: () {
-//             FocusScope.of(context).unfocus();
-//           },
-//           child: ListView(
-//             children: [
-//               Center(
-//                 child: Stack(
-//                   children: [
-//                     Container(
-//                       width: 130,
-//                       height: 130,
-//                       decoration: BoxDecoration(
-//                         border: Border.all(
-//                           width: 4,
-//                           color: Colors.white,
-//                         ),
-//                         boxShadow: [
-//                           BoxShadow(
-//                             spreadRadius: 2,
-//                             blurRadius: 10,
-//                             color: Colors.black.withOpacity(0.1),
-//                           ),
-//                         ],
-//                         shape: BoxShape.circle,
-//                         image: DecorationImage(
-//                             fit: BoxFit.cover,
-//                             image:
-//                                 AssetImage('assets/images/holding_phone.png')),
-//                       ),
-//                     ),
-//                     Positioned(
-//                       child: Container(
-//                         height: 40,
-//                         width: 40,
-//                         decoration: BoxDecoration(
-//                           shape: BoxShape.circle,
-//                           border: Border.all(
-//                             width: 4,
-//                             color: Colors.white,
-//                           ),
-//                         ),
-//                         child: Icon(
-//                           Icons.edit,
-//                           color: Colors.white,
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               SizedBox(height: 30),
-//               buildTextField("full Name", "Dummy User", false),
-//               buildTextField("Email", "dummy@email.com", false),
-//               buildTextField("Phone Number", "9876543210", false),
-//               buildTextField("About", "Busy", false),
-//               SizedBox(height: 30),
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   OutlinedButton(
-//                     onPressed: () {},
-//                     child: Text(
-//                       "Cancel",
-//                       style: TextStyle(
-//                         fontSize: 15,
-//                         letterSpacing: 2,
-//                         color: Colors.black,
-//                       ),
-//                     ),
-//                     style: OutlinedButton.styleFrom(
-//                       padding: EdgeInsets.symmetric(
-//                         horizontal: 50,
-//                       ),
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(20),
-//                       ),
-//                     ),
-//                   ),
-//                   ElevatedButton(
-//                     onPressed: () {},
-//                     child: Text(
-//                       "SAVE",
-//                       style: TextStyle(
-//                         fontSize: 15,
-//                         letterSpacing: 2,
-//                         color: Colors.white,
-//                       ),
-//                     ),
-//                     style: ElevatedButton.styleFrom(
-//                       primary: Theme.of(context).primaryColor,
-//                       padding: EdgeInsets.symmetric(horizontal: 50),
-//                       shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(20)),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget buildTextField(
-//       String labelText, String placeholder, bool isPasswordTextField) {
-//     return Padding(
-//       padding: EdgeInsets.only(bottom: 30),
-//       child: TextField(
-//         decoration: InputDecoration(
-//           contentPadding: EdgeInsets.only(bottom: 5),
-//           labelText: labelText,
-//           floatingLabelBehavior: FloatingLabelBehavior.always,
-//           hintText: placeholder,
-//           hintStyle: TextStyle(
-//             fontSize: 16,
-//             fontWeight: FontWeight.bold,
-//             color: Colors.grey,
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
