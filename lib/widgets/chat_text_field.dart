@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lets_connect/screen/canvas_draw.dart';
 import '../services/firestore_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../model/user_data.dart';
@@ -25,7 +26,7 @@ class _ChatTextFieldState extends State<ChatTextField> {
   final _picker = ImagePicker();
   String _uploadFileURL;
   var isLoading = false;
-  _sendMessage(String messageType) async {
+  sendMessage(String messageType) async {
     try {
       FireStoreService.addConversationMessages(
           widget.collection, widget.chatRoomId, {
@@ -57,7 +58,7 @@ class _ChatTextFieldState extends State<ChatTextField> {
     } catch (error) {
       print('null value');
     }
-    await _sendMessage('image');
+    await  sendMessage('image');
     setState(() {
       isLoading = false;
     });
@@ -74,10 +75,7 @@ class _ChatTextFieldState extends State<ChatTextField> {
   }
 
   bottomSheet(BuildContext context) {
-    showBottomSheet(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      context: context,
-      builder: (ctx) => Container(
+    return Container(
           height: 150.0,
           width: MediaQuery.of(context).size.width,
           margin: EdgeInsets.symmetric(
@@ -96,7 +94,10 @@ class _ChatTextFieldState extends State<ChatTextField> {
                       fontFamily: "Arial Rounded",
                     ),
                   ),
-                  onTap: () => print(''),
+                  onTap: () {
+                   Navigator.of(context).push(
+                              MaterialPageRoute(builder: (ctx) => CanvasDraw(chatRoom : widget.chatRoomId , collectionName: widget.collection, )));
+                  }
                 ),
               ),
               Divider(color: Colors.black),
@@ -142,8 +143,7 @@ class _ChatTextFieldState extends State<ChatTextField> {
                 ),
               ),
             ],
-          )),
-    );
+          ));
   }
 
   @override
@@ -174,12 +174,17 @@ class _ChatTextFieldState extends State<ChatTextField> {
           IconButton(
               color: Theme.of(context).primaryColorLight,
               icon: isLoading ? CircularProgressIndicator() : Icon(Icons.image),
-              onPressed: () => bottomSheet(context)),
+              onPressed: () { showModalBottomSheet(
+                                  backgroundColor: Theme.of(context).primaryColorLight,
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: ((builder) => bottomSheet(context)));
+              }),
           IconButton(
               color: Theme.of(context).primaryColorLight,
               icon: Icon(Icons.send),
               onPressed:
-                  _message.trim().isEmpty ? null : () => _sendMessage('text'))
+                  _message.trim().isEmpty ? null : () =>  sendMessage('text'))
         ],
       ),
     );
