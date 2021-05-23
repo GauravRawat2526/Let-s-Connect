@@ -45,7 +45,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
           Expanded(
               child: MessageList(
                   collectionName: 'ChatRoom', chatRoomId: widget.chatRoomId)),
-          ChatTextField(collection: 'ChatRoom', chatRoomId: widget.chatRoomId)
+          ChatTextField(
+            collection: 'ChatRoom',
+            chatRoomId: widget.chatRoomId,
+          )
         ],
       ),
     );

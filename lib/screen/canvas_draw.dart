@@ -1,18 +1,36 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:lets_connect/model/user_data.dart';
+import 'package:lets_connect/services/firestore_service.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'dart:ui' as ui;
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 class CanvasDraw extends StatefulWidget {
+  final chatRoom;
+  final collectionName;
+  CanvasDraw({
+    @required this.chatRoom,
+    @required this.collectionName
+  });
   @override
   _CanvasDrawState createState() => _CanvasDrawState();
 }
 
 class _CanvasDrawState extends State<CanvasDraw> {
+  String CreateCryptoRandomString([int length = 32]) {
+    final Random _random = Random.secure();
+    var values = List<int>.generate(length, (i) => _random.nextInt(256));
+    return base64Url.encode(values);
+  }
   GlobalKey globalKey = GlobalKey();
   ui.PictureRecorder _recorder;
   Canvas _canvas;
@@ -137,6 +155,7 @@ class _CanvasDrawState extends State<CanvasDraw> {
   }
 
   Future<void> _saveImage() async{
+    dynamic key = CreateCryptoRandomString(32);
     RenderRepaintBoundary boundary= globalKey.currentContext.findRenderObject();
     ui.Image image=await boundary.toImage();
     print(image);
@@ -148,30 +167,27 @@ class _CanvasDrawState extends State<CanvasDraw> {
     final Directory systemTempDir=Directory.systemTemp;
     final File file = await new File('${systemTempDir.path}/foo.png').create();
     file.writeAsBytes(finalImage);
-    final Reference ref=FirebaseStorage.instance.ref().child('images').child('image.png');
+    final Reference ref=FirebaseStorage.instance.ref().child('Doodle_Images').child('image${key}png');
     final UploadTask uploadTask=ref.putFile(file);
     var url = await (await uploadTask).ref.getDownloadURL();
     _uploadFileURL = url.toString();  
-    print(_uploadFileURL);  
+    await sendMessage(_uploadFileURL);
   }
 
-  Future uploadPic(BuildContext context) async {
+  sendMessage(String url) async {
     try {
-      String fileName = _imageFile.split('/').last;
-      Reference firebaseStorageRef =
-          FirebaseStorage.instance.ref().child(fileName);
-      UploadTask uploadTask = firebaseStorageRef.putString(_imageFile);//putFile(_imageFile);
-      var url = await (await uploadTask).ref.getDownloadURL();
-      _uploadFileURL = url.toString();
-      print(_uploadFileURL);
-    } catch (error) {
-      print('error');
+      FireStoreService.addConversationMessages(
+          widget.collectionName, widget.chatRoom, {
+        'message': url,
+        'sentBy': Provider.of<UserData>(context, listen: false).userName,
+        'createdAt': Timestamp.now(),
+        'messageType': 'image'
+      });
+    } on FirebaseException catch (error) {
+      print(error.message);
     }
-}
-}
-
-  
-
+  }
+  }
 
 class ImagePainter extends CustomPainter{
   List<DrawModel>pointsList;

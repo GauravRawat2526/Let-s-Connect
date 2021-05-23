@@ -1,5 +1,4 @@
 import 'dart:io';
-//import 'package:path/path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -158,7 +157,7 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
           CircleAvatar(
             radius: 60.0,
             backgroundImage: _imageFile == null
-                ? AssetImage('assets/images/holding_phone.png')
+                ? AssetImage('assets/images/groupProfile.png')
                 : FileImage(File(_imageFile.path)),
           ),
           Positioned(
@@ -250,7 +249,7 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
       _uploadFileURL = url.toString();
       print(_uploadFileURL);
     } catch (error) {
-      print('null value');
+      _uploadFileURL='https://image.flaticon.com/icons/png/128/166/166258.png';
     }
   }
 

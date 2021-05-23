@@ -8,7 +8,9 @@ class MessageBubble extends StatelessWidget {
   final key;
   final userName;
   final Timestamp createdAt;
-  MessageBubble(this._message, this.isMe, this.userName, this.createdAt,
+  final messageType;
+  MessageBubble(
+      this._message, this.isMe, this.userName, this.createdAt, this.messageType,
       {this.key});
   @override
   Widget build(BuildContext context) {
@@ -32,22 +34,26 @@ class MessageBubble extends StatelessWidget {
                           isMe ? Radius.circular(20) : Radius.circular(0),
                       bottomRight:
                           isMe ? Radius.circular(0) : Radius.circular(20))),
-              constraints:
-                  BoxConstraints(minHeight: 50, maxWidth: 240, minWidth: 100),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (!isMe)
-                      Text(
-                        userName,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
-                    Text(
-                      _message,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ])),
+              constraints: messageType == 'image'
+                  ? BoxConstraints(maxHeight: 200, maxWidth: 200)
+                  : BoxConstraints(minHeight: 50, minWidth: 100),
+              child: messageType == 'image'
+                  ? Image.network(_message)
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                          if (!isMe)
+                            Text(
+                              userName,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          Text(
+                            _message,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ])),
           if (isMe)
             Text(
               time,

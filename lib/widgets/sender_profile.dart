@@ -20,7 +20,7 @@ class _SenderProfileState extends State<SenderProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(backgroundColor: Colors.purple,title: Text('User Profile',style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: "Arial Rounded",),),),
+      appBar: AppBar(backgroundColor: Colors.purple,title: Text('${widget.userName}',style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily: "Arial Rounded",),),),
       body: Builder(
           builder: (context) => Container(
                   child: Column(

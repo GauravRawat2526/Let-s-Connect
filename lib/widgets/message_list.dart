@@ -55,6 +55,7 @@ class _MessageListState extends State<MessageList> {
                       snapshot.data.docs[index]['sentBy'] == myName,
                       snapshot.data.docs[index]['sentBy'],
                       snapshot.data.docs[index]['createdAt'],
+                      snapshot.data.docs[index]['messageType'],
                       key: ValueKey(snapshot.data.docs[index].id),
                     );
                   });
