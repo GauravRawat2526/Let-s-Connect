@@ -79,7 +79,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         _currentPage = page;
                       });
                     },
-                    
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.all(40.0),
@@ -100,8 +99,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     fontSize: 20,
                                     color: Colors.deepOrange)),
                             SizedBox(height: 15.0),
-                            Text(
-                                'Start chating with people from all over the world.',
+                            Text('Start chating with your friends.',
                                 style: TextStyle(
                                     fontFamily: "Arial Rounded",
                                     fontSize: 15,
@@ -122,13 +120,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                             SizedBox(height: 25.0),
-                            Text('Stream Together\naround the world',
+                            Text('Share your status',
                                 style: TextStyle(
                                     fontFamily: "Arial Rounded",
                                     fontSize: 20,
                                     color: Colors.purple)),
                             SizedBox(height: 15.0),
-                            Text('watch videos with friends across the world!',
+                            Text('See your friend\'s status',
                                 style: TextStyle(
                                     fontFamily: "Arial Rounded",
                                     fontSize: 15,
@@ -160,7 +158,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     fontFamily: "Arial Rounded",
                                     fontSize: 15,
                                     color: Colors.blue[900])),
-                                    
                           ],
                         ),
                       ),

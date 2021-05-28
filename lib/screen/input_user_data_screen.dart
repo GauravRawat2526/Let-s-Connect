@@ -206,7 +206,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
                 color: Colors.purple,
               ),
               labelText: "User Name",
-              helperText: "User Name can't empty",
+              // helperText: "User Name can't empty",
               hintText: "User Name",
               errorText: snapshot.error,
             ),
@@ -238,7 +238,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
                 color: Colors.purple,
               ),
               labelText: "Name",
-              helperText: "Name can't empty",
+              // helperText: "Name can't empty",
               hintText: "Name",
               errorText: snapshot.error,
             ),
@@ -271,7 +271,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
                 color: Colors.purple,
               ),
               labelText: "About",
-              helperText: "About field can't empty",
+              // helperText: "About field can't empty",
               hintText: "About",
               errorText: snapshot.error,
             ),
@@ -290,7 +290,7 @@ class _InputUserDataScreenState extends State<InputUserDataScreen> {
       _uploadFileURL = url.toString();
       print(_uploadFileURL);
     } catch (error) {
-      _uploadFileURL='https://img.icons8.com/officel/2x/person-male.png';
+      _uploadFileURL = 'https://img.icons8.com/officel/2x/person-male.png';
     }
   }
 }

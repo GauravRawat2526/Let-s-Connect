@@ -46,97 +46,118 @@ class _CanvasDrawState extends State<CanvasDraw> {
   Widget build(BuildContext context) {
     availableSize = MediaQuery.of(context).size;
     return Scaffold(
-      body: isLoading
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                  SpinKitCircle(
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  Text('Sending Doodle')
-                ])
-          : Container(
-              child: GestureDetector(
-                onPanUpdate: (DragUpdateDetails details) {
-                  setState(() {
-                    RenderBox object = context.findRenderObject();
-                    points.add(DrawModel(
-                      offset: object.globalToLocal(details.globalPosition),
-                      paint: Paint()
-                        ..color = color
-                        ..strokeCap = StrokeCap.round
-                        ..strokeWidth = 5.0,
-                    ));
-                    // Offset _localPosition = object.globalToLocal(details.globalPosition);
-                    // _points=new List.from(_points)..add(_localPosition);
-                  });
-                },
-                onPanEnd: (DragEndDetails details) => points.add(null),
-                child: RepaintBoundary(
-                  key: globalKey,
-                  child: Stack(
-                    children: <Widget>[
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/canvas.png'),
-                            fit: BoxFit.fill,
+        body: isLoading
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                    SpinKitCircle(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    Text('Sending Doodle')
+                  ])
+            : Container(
+                child: GestureDetector(
+                  onPanUpdate: (DragUpdateDetails details) {
+                    setState(() {
+                      RenderBox object = context.findRenderObject();
+                      points.add(DrawModel(
+                        offset: object.globalToLocal(details.globalPosition),
+                        paint: Paint()
+                          ..color = color
+                          ..strokeCap = StrokeCap.round
+                          ..strokeWidth = 5.0,
+                      ));
+                      // Offset _localPosition = object.globalToLocal(details.globalPosition);
+                      // _points=new List.from(_points)..add(_localPosition);
+                    });
+                  },
+                  onPanEnd: (DragEndDetails details) => points.add(null),
+                  child: RepaintBoundary(
+                    key: globalKey,
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage('assets/images/canvas.png'),
+                              fit: BoxFit.fill,
+                            ),
                           ),
                         ),
-                      ),
-                      CustomPaint(
-                          painter: new ImagePainter(pointsList: points),
-                          size: Size.infinite),
-                    ],
+                        CustomPaint(
+                            painter: new ImagePainter(pointsList: points),
+                            size: Size.infinite),
+                      ],
+                    ),
                   ),
                 ),
               ),
+        floatingActionButton: SpeedDial(
+          animatedIcon: AnimatedIcons.menu_arrow,
+          children: [
+            SpeedDialChild(
+              child: Icon(Icons.send, color: Colors.white),
+              backgroundColor: Colors.grey,
+              label: "Send Doodle",
+              onTap: () {
+                setState(() {
+                  _sendImage();
+                });
+              },
             ),
-      floatingActionButton:
-          SpeedDial(animatedIcon: AnimatedIcons.menu_arrow, children: [
-        SpeedDialChild(
-          child: Icon(Icons.save, color: Colors.white),
-          backgroundColor: Colors.grey,
-          label: "Send Doodle",
-          onTap: () {
-            setState(() {
-              //generateImage();
-              _saveImage();
-            });
-          },
-        ),
-        SpeedDialChild(
-            child: Icon(Icons.replay_outlined, color: Colors.white),
-            backgroundColor: Colors.grey,
-            label: "Reset Draw",
-            onTap: () {
-              setState(() {
-                points.clear();
-              });
-            }),
-        SpeedDialChild(
-          child: Icon(MdiIcons.card, color: Colors.white),
-          backgroundColor: Colors.grey,
-          label: "Eraser",
-          onTap: () => color = Colors.white,
-        ),
-        SpeedDialChild(
-          child: Icon(MdiIcons.pen, color: Colors.white),
-          backgroundColor: Colors.black,
-          label: "Black Pen",
-          onTap: () => color = Colors.black,
-        ),
-        SpeedDialChild(
-          child: Icon(MdiIcons.pen, color: Colors.white),
-          backgroundColor: Colors.red,
-          label: "Red Pen",
-          onTap: () => color = Colors.red,
-        ),
-      ]),
-    );
+            SpeedDialChild(
+                child: Icon(Icons.save, color: Colors.white),
+                backgroundColor: Colors.grey,
+                label: "Save Doodle",
+                onTap: () {
+                  setState(() {
+                    _saveImage();
+                  });
+                }),
+            SpeedDialChild(
+                child: Icon(Icons.replay_outlined, color: Colors.white),
+                backgroundColor: Colors.grey,
+                label: "Reset Draw",
+                onTap: () {
+                  setState(() {
+                    points.clear();
+                  });
+                }),
+            SpeedDialChild(
+              child: Icon(MdiIcons.card, color: Colors.white),
+              backgroundColor: Colors.grey,
+              label: "Eraser",
+              onTap: () => color = Colors.white,
+            ),
+            SpeedDialChild(
+              child: Icon(MdiIcons.pen, color: Colors.white),
+              backgroundColor: Colors.black,
+              label: "Black Pen",
+              onTap: () => color = Colors.black,
+            ),
+            SpeedDialChild(
+              child: Icon(MdiIcons.pen, color: Colors.white),
+              backgroundColor: Colors.red,
+              label: "Red Pen",
+              onTap: () => color = Colors.red,
+            ),
+            SpeedDialChild(
+              child: Icon(MdiIcons.pen, color: Colors.white),
+              backgroundColor: Colors.blue,
+              label: "Blue Pen",
+              onTap: () => color = Colors.blue,
+            ),
+            SpeedDialChild(
+              child: Icon(MdiIcons.pen, color: Colors.white),
+              backgroundColor: Colors.green,
+              label: "Green Pen",
+              onTap: () => color = Colors.green,
+            ),
+          ],
+        ));
   }
 
   void initializeRecording() {
@@ -152,6 +173,38 @@ class _CanvasDrawState extends State<CanvasDraw> {
   }
 
   Future<void> _saveImage() async {
+    setState(() {
+      isLoading = true;
+    });
+    dynamic key = createCryptoRandomString(32);
+    RenderRepaintBoundary boundary =
+        globalKey.currentContext.findRenderObject();
+    ui.Image image = await boundary.toImage();
+    print(image);
+    ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    print(byteData);
+    Uint8List pngByte = byteData.buffer.asUint8List();
+    print(pngByte);
+
+    if (!(await Permission.storage.status.isGranted)) {
+      await Permission.storage.request();
+    }
+
+    final result = await ImageGallerySaver.saveImage(
+        Uint8List.fromList(pngByte),
+        quality: 50,
+        name: "canvas_image_${key}");
+    setState(() {
+      isLoading = false;
+    });
+    Navigator.of(context).pop();
+    print(result);
+  }
+
+  Future<void> _sendImage() async {
+    setState(() {
+      isLoading = true;
+    });
     dynamic key = createCryptoRandomString(32);
     RenderRepaintBoundary boundary =
         globalKey.currentContext.findRenderObject();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_connect/widgets/group_profile.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/chat_text_field.dart';
 import '../widgets/message_list.dart';
@@ -28,7 +29,9 @@ class _GroupConversationScreenState extends State<GroupConversationScreen> {
           ],
           title: Text(widget.groupName),
         ),
-        onTap: () => print('appBar'),
+        onTap: () {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => GroupProfile(groupName:widget.groupName,imageUrl: widget.imageUrl, users: widget.users,)));
+        },
       ),
       body: Column(
         children: [
