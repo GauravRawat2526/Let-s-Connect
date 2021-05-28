@@ -21,15 +21,15 @@ class _StatusScreenState extends State<StatusScreen> {
   static final _firestore = FirebaseFirestore.instance;
   final fb = FirebaseDatabase.instance.reference().child('MyImages');
   final ImagePicker _picker = ImagePicker();
-  List<dynamic> itemList = new List();
-  List<String> imageList = new List();
-  List<dynamic> list = new List();
-  List<String> userList = new List();
+  List<dynamic> itemList = [];
+  List<String> imageList = [];
+  List<dynamic> list = [];
+  List<String> userList = [];
   File image;
   String _uploadFileURL;
   String name;
   final StoryController controller = StoryController();
-  String CreateCryptoRandomString([int length = 32]) {
+  String createCryptoRandomString([int length = 32]) {
     final Random _random = Random.secure();
     var values = List<int>.generate(length, (i) => _random.nextInt(256));
     return base64Url.encode(values);
@@ -40,7 +40,7 @@ class _StatusScreenState extends State<StatusScreen> {
     final userData = Provider.of<UserData>(context);
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    Widget LoadImage() {
+    Widget loadImage() {
       print(imageList.length);
       return Expanded(
           child: imageList.length == 0
@@ -99,7 +99,6 @@ class _StatusScreenState extends State<StatusScreen> {
                                 //   ),
                                 // ),
                               ),
-                              
                             ),
                           ),
                         ),
@@ -109,25 +108,25 @@ class _StatusScreenState extends State<StatusScreen> {
                           child: Container(
                             height: 15,
                             width: 60,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  border: Border.all(
-                                    color: Colors.white,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  userList[index],
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: "Arial Rounded",
+                                    color: Colors.purple,
+                                    fontSize: 10,
                                   ),
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    userList[index],
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontFamily: "Arial Rounded",
-                                      color: Colors.purple,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ),
-                              ),   
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -145,7 +144,7 @@ class _StatusScreenState extends State<StatusScreen> {
               child: Container(
                 height: 90,
                 width: width,
-                child: LoadImage(),
+                child: loadImage(),
               ),
             ),
             itemList.length == 0
@@ -157,12 +156,10 @@ class _StatusScreenState extends State<StatusScreen> {
                         height: 10,
                       ),
                       Container(
-                        height: height -290,
+                        height: height - 290,
                         child: StoryView(
                           controller: controller,
-                          storyItems: [
-                            for (var i in itemList) showl(i, name)
-                          ],
+                          storyItems: [for (var i in itemList) showl(i, name)],
                           onStoryShow: (s) {
                             print("Showing a story");
                           },
@@ -229,6 +226,7 @@ class _StatusScreenState extends State<StatusScreen> {
         print(imageList.length);
       });
     });
+    super.initState();
   }
 
   Future<void> takeImage(UserData userData) async {
@@ -241,7 +239,7 @@ class _StatusScreenState extends State<StatusScreen> {
     var url = await (await uploadTask).ref.getDownloadURL();
     _uploadFileURL = url.toString();
     if (_uploadFileURL != null) {
-      dynamic key = CreateCryptoRandomString(32);
+      dynamic key = createCryptoRandomString(32);
       final documentSnapshot =
           await _firestore.collection('MyImages').doc(userData.userName).get();
       if (documentSnapshot.exists == true) {
@@ -262,9 +260,9 @@ class _StatusScreenState extends State<StatusScreen> {
         list.add(_uploadFileURL);
         _firestore.collection('MyImages').doc(userData.userName).update({
           'url': list,
-          'userImage':userData.imageUrl,
+          'userImage': userData.imageUrl,
         }).then((value) {
-          ShowToastNow();
+          showToastNow();
         });
       } else {
         list.add(_uploadFileURL);
@@ -274,7 +272,7 @@ class _StatusScreenState extends State<StatusScreen> {
           'url': list,
           'link': _uploadFileURL,
         }).then((value) {
-          ShowToastNow();
+          showToastNow();
         });
       }
     } else {
@@ -282,7 +280,7 @@ class _StatusScreenState extends State<StatusScreen> {
     }
   }
 
-  ShowToastNow() {
+  showToastNow() {
     Fluttertoast.showToast(
         msg: "Image Saved",
         webShowClose: true,
@@ -291,4 +289,3 @@ class _StatusScreenState extends State<StatusScreen> {
         gravity: ToastGravity.BOTTOM);
   }
 }
-

@@ -35,8 +35,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
         ),
         onTap: () {
           setState(() {
-            Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (ctx) => SenderProfile(aboutUser: widget.aboutUser, imageUrl: widget.imageUrl, name: widget.name, userName: widget.userName)));
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (ctx) => SenderProfile(
+                    aboutUser: widget.aboutUser,
+                    imageUrl: widget.imageUrl,
+                    name: widget.name,
+                    userName: widget.userName)));
           });
         },
       ),
@@ -53,11 +57,4 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
     );
   }
-
-  Widget senderProfile()
-  {
-    
-  }
 }
-
-

@@ -26,7 +26,7 @@ class _MessageListState extends State<MessageList> {
         isLoading = false;
       });
     });
-    ;
+
     super.initState();
   }
 

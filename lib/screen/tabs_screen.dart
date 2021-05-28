@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 import '../model/user_data.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import './groups_chat_screen.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 class TabsScreen extends StatefulWidget {
   @override
@@ -44,9 +43,7 @@ class _TabsScreenState extends State<TabsScreen> {
         });
       });
     });
-    final fbm = FirebaseMessaging.onMessage.listen((event) {
-      print(event);
-    });
+
     super.initState();
   }
 

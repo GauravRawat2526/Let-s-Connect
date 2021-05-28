@@ -25,7 +25,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _aboutUser = new TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
     final bloc = Provider.of<Blocs>(context);
     final userData = Provider.of<UserData>(context);
     _uploadFileURL = userData.imageUrl;
@@ -88,37 +87,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ConstrainedBox(
                       constraints:
                           BoxConstraints.tightFor(width: 160, height: 40),
-                      child: loading ?
-                        Center(child: CircularProgressIndicator(),):
-                        ElevatedButton(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('upload profile',
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    fontFamily: "Arial Rounded",
-                                    fontWeight: FontWeight.bold)),
-                            Icon(Icons.arrow_upward),
-                          ],
-                        ),
-                        onPressed: () async {
-                          setState(() => loading=true);
-                          await uploadPic(context, userData);
-                          // setState(() => loading=false);
-                          print(_uploadFileURL);
-                          print('hello');
-                          print(userData.userName);
-                          print(_aboutUser.text);
-                          print(_fullName.text);
-                          userData.setUserData(userData.userName,
-                              _fullName.text, _uploadFileURL, _aboutUser.text);
-                          FireStoreService.addUser(userData.userName,
-                              _aboutUser.text, _fullName.text, _uploadFileURL);
-                          setState(() => loading=false);
-                          ShowToastNow();
-                        },
-                      ),
+                      child: loading
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ElevatedButton(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('upload profile',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontFamily: "Arial Rounded",
+                                          fontWeight: FontWeight.bold)),
+                                  Icon(Icons.arrow_upward),
+                                ],
+                              ),
+                              onPressed: () async {
+                                setState(() => loading = true);
+                                await uploadPic(context, userData);
+                                // setState(() => loading=false);
+                                print(_uploadFileURL);
+                                print('hello');
+                                print(userData.userName);
+                                print(_aboutUser.text);
+                                print(_fullName.text);
+                                userData.setUserData(
+                                    userData.userName,
+                                    _fullName.text,
+                                    _uploadFileURL,
+                                    _aboutUser.text);
+                                FireStoreService.addUser(
+                                    userData.userName,
+                                    _aboutUser.text,
+                                    _fullName.text,
+                                    _uploadFileURL);
+                                setState(() => loading = false);
+                                Navigator.of(context).pop();
+                                showToastNow();
+                              },
+                            ),
                     ),
                     SizedBox(
                       height: 40.0,
@@ -384,10 +393,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 _aboutUser.text,
                                 _fullName.text,
                                 _uploadFileURL);
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (ctx) => ProfileScreen()));
-                            ShowToastNow();
+                            Navigator.of(context).pop();
+                            showToastNow();
                           },
                   ),
                 ),
@@ -466,10 +473,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 _aboutUser.text,
                                 _fullName.text,
                                 _uploadFileURL);
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (ctx) => ProfileScreen()));
-                            ShowToastNow();
+                            Navigator.of(context).pop();
+                            showToastNow();
                           },
                   ),
                 ),
@@ -552,7 +557,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  ShowToastNow() {
+  showToastNow() {
     Fluttertoast.showToast(
         msg: "Profile Updated",
         webShowClose: true,

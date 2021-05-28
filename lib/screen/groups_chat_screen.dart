@@ -69,7 +69,7 @@ class _GroupsChatScreenState extends State<GroupsChatScreen> {
 
   showUsersInMoalBottomSheet() {
     showModalBottomSheet(
-      isScrollControlled: true,
+        isScrollControlled: true,
         context: context,
         builder: (ctx) {
           return AddUsersToGroup();
