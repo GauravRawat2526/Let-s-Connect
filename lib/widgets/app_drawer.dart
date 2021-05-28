@@ -5,7 +5,6 @@ import '../model/user_data.dart';
 import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
-  String ans;
   @override
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context);

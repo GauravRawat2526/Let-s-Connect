@@ -16,70 +16,125 @@ import 'dart:ui' as ui;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+
 class CanvasDraw extends StatefulWidget {
   final chatRoom;
   final collectionName;
-  CanvasDraw({
-    @required this.chatRoom,
-    @required this.collectionName
-  });
+  CanvasDraw({@required this.chatRoom, @required this.collectionName});
   @override
   _CanvasDrawState createState() => _CanvasDrawState();
 }
 
 class _CanvasDrawState extends State<CanvasDraw> {
-  String CreateCryptoRandomString([int length = 32]) {
+  var isLoading = false;
+  String createCryptoRandomString([int length = 32]) {
     final Random _random = Random.secure();
     var values = List<int>.generate(length, (i) => _random.nextInt(256));
     return base64Url.encode(values);
   }
+
   GlobalKey globalKey = GlobalKey();
   ui.PictureRecorder _recorder;
   Canvas _canvas;
   Image img;
   Size availableSize;
-  final dpr=ui.window.devicePixelRatio;
-  List<DrawModel> points=List();
-  Color color=Colors.black;
-  String _imageFile;
+  final dpr = ui.window.devicePixelRatio;
+  List<DrawModel> points = [];
+  Color color = Colors.black;
   String _uploadFileURL;
   @override
   Widget build(BuildContext context) {
-
-    availableSize=MediaQuery.of(context).size;
+    availableSize = MediaQuery.of(context).size;
     return Scaffold(
-      body: Container(
-        child: GestureDetector(
-          onPanUpdate: (DragUpdateDetails details){
-            setState(() {
-              RenderBox object= context.findRenderObject();
-              points.add(DrawModel(offset:object.globalToLocal(details.globalPosition),
-              paint: Paint()
-              ..color=color
-              ..strokeCap=StrokeCap.round
-              ..strokeWidth=5.0,
-              ));
-              // Offset _localPosition = object.globalToLocal(details.globalPosition);
-              // _points=new List.from(_points)..add(_localPosition);
-            });
-          },
-          onPanEnd: (DragEndDetails details)=> points.add(null),
-          child: RepaintBoundary(
-              key: globalKey,
-              child: Stack(
-              children: <Widget>[
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration( 
-                  image: DecorationImage( 
-                    image:AssetImage('assets/images/canvas.png'),
-                    fit:BoxFit.fill, 
-                  ),
+        body: isLoading
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                    SpinKitCircle(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    Text('Sending Doodle')
+                  ])
+            : Container(
+                child: GestureDetector(
+                  onPanUpdate: (DragUpdateDetails details) {
+                    setState(() {
+                      RenderBox object = context.findRenderObject();
+                      points.add(DrawModel(
+                        offset: object.globalToLocal(details.globalPosition),
+                        paint: Paint()
+                          ..color = color
+                          ..strokeCap = StrokeCap.round
+                          ..strokeWidth = 5.0,
+                      ));
+                      // Offset _localPosition = object.globalToLocal(details.globalPosition);
+                      // _points=new List.from(_points)..add(_localPosition);
+                    });
+                  },
+                  onPanEnd: (DragEndDetails details) => points.add(null),
+                  child: RepaintBoundary(
+                    key: globalKey,
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage('assets/images/canvas.png'),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                        CustomPaint(
+                            painter: new ImagePainter(pointsList: points),
+                            size: Size.infinite),
+                      ],
+                    ),
                   ),
                 ),
-                CustomPaint(painter: new ImagePainter(pointsList: points) ,size:Size.infinite),
-              ],
+              ),
+        floatingActionButton: SpeedDial(
+          animatedIcon: AnimatedIcons.menu_arrow,
+          children: [
+            SpeedDialChild(
+              child: Icon(Icons.save, color: Colors.white),
+              backgroundColor: Colors.grey,
+              label: "Send Doodle",
+              onTap: () {
+                setState(() {
+                  //generateImage();
+                  _saveImage();
+                });
+              },
+            ),
+            SpeedDialChild(
+                child: Icon(Icons.replay_outlined, color: Colors.white),
+                backgroundColor: Colors.grey,
+                label: "Reset Draw",
+                onTap: () {
+                  setState(() {
+                    points.clear();
+                  });
+                }),
+            SpeedDialChild(
+              child: Icon(MdiIcons.card, color: Colors.white),
+              backgroundColor: Colors.grey,
+              label: "Eraser",
+              onTap: () => color = Colors.white,
+            ),
+            SpeedDialChild(
+              child: Icon(MdiIcons.pen, color: Colors.white),
+              backgroundColor: Colors.black,
+              label: "Black Pen",
+              onTap: () => color = Colors.black,
+            ),
+            SpeedDialChild(
+              child: Icon(MdiIcons.pen, color: Colors.white),
+              backgroundColor: Colors.red,
+              label: "Red Pen",
+              onTap: () => color = Colors.red,
             ),
           ),
         ),
@@ -153,26 +208,30 @@ class _CanvasDrawState extends State<CanvasDraw> {
     );
   }
 
-  void initializeRecording(){
-    _recorder=ui.PictureRecorder();
-    _canvas= Canvas(_recorder);
-    _canvas.scale(dpr,dpr);
+  void initializeRecording() {
+    _recorder = ui.PictureRecorder();
+    _canvas = Canvas(_recorder);
+    _canvas.scale(dpr, dpr);
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     initializeRecording();
   }
 
-  Future<void> _saveImage() async{
-    dynamic key = CreateCryptoRandomString(32);
-    RenderRepaintBoundary boundary= globalKey.currentContext.findRenderObject();
-    ui.Image image=await boundary.toImage();
+  Future<void> _saveImage() async {
+    setState(() {
+      isLoading = true;
+    });
+    dynamic key = createCryptoRandomString(32);
+    RenderRepaintBoundary boundary =
+        globalKey.currentContext.findRenderObject();
+    ui.Image image = await boundary.toImage();
     print(image);
-    ByteData byteData=await image.toByteData(format:ui.ImageByteFormat.png);
+    ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     print(byteData);
-    Uint8List pngByte=byteData.buffer.asUint8List();
+    Uint8List pngByte = byteData.buffer.asUint8List();
     print(pngByte);
 
     if(!(await Permission.storage.status.isGranted))
@@ -204,8 +263,12 @@ class _CanvasDrawState extends State<CanvasDraw> {
     final Reference ref=FirebaseStorage.instance.ref().child('Doodle_Images').child('image${key}.png');
     final UploadTask uploadTask=ref.putFile(file);
     var url = await (await uploadTask).ref.getDownloadURL();
-    _uploadFileURL = url.toString();  
+    _uploadFileURL = url.toString();
     await sendMessage(_uploadFileURL);
+    setState(() {
+      isLoading = false;
+    });
+    Navigator.of(context).pop();
   }
 
   sendMessage(String url) async {
@@ -221,31 +284,28 @@ class _CanvasDrawState extends State<CanvasDraw> {
       print(error.message);
     }
   }
-  }
+}
 
-class ImagePainter extends CustomPainter{
-  List<DrawModel>pointsList;
-  Color color=Colors.black;
+class ImagePainter extends CustomPainter {
+  List<DrawModel> pointsList;
+  Color color = Colors.black;
   ImagePainter({this.pointsList});
   @override
   void paint(Canvas canvas, Size size) {
-    
-    for(int i=0;i<pointsList.length-1;i++)
-    {
-      if(pointsList[i]!=null&&pointsList[i+1]!=null)
-      {
-        canvas.drawLine(pointsList[i].offset, pointsList[i+1].offset, pointsList[i].paint);
+    for (int i = 0; i < pointsList.length - 1; i++) {
+      if (pointsList[i] != null && pointsList[i + 1] != null) {
+        canvas.drawLine(pointsList[i].offset, pointsList[i + 1].offset,
+            pointsList[i].paint);
       }
     }
   }
-  
-    @override
-    bool shouldRepaint(ImagePainter oldDelegate) =>true;
 
+  @override
+  bool shouldRepaint(ImagePainter oldDelegate) => true;
 }
 
-class DrawModel{
+class DrawModel {
   final Offset offset;
   final Paint paint;
-  DrawModel({this.offset,this.paint});
+  DrawModel({this.offset, this.paint});
 }

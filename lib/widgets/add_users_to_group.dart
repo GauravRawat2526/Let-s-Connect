@@ -6,7 +6,6 @@ import '../services/firestore_service.dart';
 import '../model/user_data.dart';
 import 'package:provider/provider.dart';
 
-
 class AddUsersToGroup extends StatefulWidget {
   AddUsersToGroup({Key key}) : super(key: key);
 
@@ -63,7 +62,7 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
     Map<String, dynamic> data = {
       'groupName': groupName,
       'users': usersToAddInGroup,
-      'imageUrl':_uploadFileURL,
+      'imageUrl': _uploadFileURL,
     };
     setState(() {
       isLoading = true;
@@ -78,10 +77,12 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 425,
+      height: MediaQuery.of(context).size.height * 0.9,
       child: Column(
         children: [
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           imageProfile(context),
           //SizedBox(height: 10,),
           Container(
@@ -116,17 +117,20 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
                                 width: 2),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                            borderSide:
-                                BorderSide(color: Theme.of(context).primaryColor),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0)),
+                            borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor),
                           ),
                         )),
                   ),
                 ),
-                TextButton(onPressed: () async{
-                  await uploadPic(context);
-                  createGroupChatRoom();
-                  }, child: Icon(Icons.add))
+                TextButton(
+                    onPressed: () async {
+                      await uploadPic(context);
+                      createGroupChatRoom();
+                    },
+                    child: Icon(Icons.add))
               ],
             ),
           ),
@@ -150,7 +154,10 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
       ),
     );
   }
-  Widget imageProfile(BuildContext context,) {
+
+  Widget imageProfile(
+    BuildContext context,
+  ) {
     return Center(
       child: Stack(
         children: <Widget>[
@@ -232,7 +239,7 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
 
   void takePhoto(ImageSource source) async {
     print(source);
-    final pickerFile = await _picker.getImage(source: source, imageQuality: 50);
+    final pickerFile = await _picker.getImage(source: source, imageQuality: 30);
     setState(() {
       _imageFile = File(pickerFile.path);
     });
@@ -249,10 +256,10 @@ class _AddUsersToGroupState extends State<AddUsersToGroup> {
       _uploadFileURL = url.toString();
       print(_uploadFileURL);
     } catch (error) {
-      _uploadFileURL='https://image.flaticon.com/icons/png/128/166/166258.png';
+      _uploadFileURL =
+          'https://image.flaticon.com/icons/png/128/166/166258.png';
     }
   }
-
 }
 
 class AddGroupTile extends StatefulWidget {
