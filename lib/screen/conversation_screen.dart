@@ -57,4 +57,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
     );
   }
+<<<<<<< HEAD
+
+=======
+>>>>>>> f857a55f6b04f57f275526ec035bc88b1b1e8323
 }

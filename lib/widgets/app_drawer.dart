@@ -32,6 +32,10 @@ class AppDrawer extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (BuildContext context) => ProfileScreen()));
             },
+            trailing: Icon(
+              Icons.keyboard_arrow_right,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
           Divider(
             color: Colors.black,
@@ -42,6 +46,10 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               PhoneAuth.logout(context);
             },
+            trailing: Icon(
+              Icons.keyboard_arrow_right,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
         ],
       ),
