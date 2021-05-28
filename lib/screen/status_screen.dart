@@ -24,7 +24,13 @@ class _StatusScreenState extends State<StatusScreen> {
   List<dynamic> itemList = new List();
   List<String> imageList = new List();
   List<dynamic> list = new List();
+ // List<dynamic> storeDate = new List();
+  List<dynamic> storeTime = new List();
+ // List<dynamic> date=new List();
+  List<dynamic> time=new List();
+  List<dynamic> ans=new List();
   List<String> userList = new List();
+  var now=DateTime.now();
   File image;
   String _uploadFileURL;
   String name;
@@ -59,7 +65,7 @@ class _StatusScreenState extends State<StatusScreen> {
                             child: GestureDetector(
                               onTap: () async {
                                 await _firestore
-                                    .collection('MyImages')
+                                    .collection('MImages')
                                     .get()
                                     .then((querySnapshot) {
                                   querySnapshot.docs.forEach((result) {
@@ -67,10 +73,17 @@ class _StatusScreenState extends State<StatusScreen> {
                                       print('yess');
                                       name = userList[index];
                                       itemList = result['url'];
+                                      time=result['time'];
                                     }
                                   });
                                   setState(() {
                                     print('value is');
+                                    ans.clear();
+                                    for(int i=0;i<itemList.length;i++){
+                                          print(itemList[i]);
+                                          print(time[i]);
+                                          show(itemList[i],name,time[i]);
+                                    }
                                     print(itemList.length);
                                     print(imageList.length);
                                   });
@@ -148,7 +161,7 @@ class _StatusScreenState extends State<StatusScreen> {
                 child: LoadImage(),
               ),
             ),
-            itemList.length == 0
+            ans.length == 0
                 ? Text("Loading")
                 : Expanded(
                     child: ListView(
@@ -161,7 +174,8 @@ class _StatusScreenState extends State<StatusScreen> {
                         child: StoryView(
                           controller: controller,
                           storyItems: [
-                            for (var i in itemList) showl(i, name)
+                            for (var i in ans) showl(i, name)
+                            //for(int i=0;i<itemList.length;i++) show(itemList[i],name,date[i],time[i]),
                           ],
                           onStoryShow: (s) {
                             print("Showing a story");
@@ -192,13 +206,26 @@ class _StatusScreenState extends State<StatusScreen> {
     );
   }
 
+  show(String data, String name,String time)
+  {
+    print('why');
+    print(time);
+    Duration difference= now.difference(DateTime.tryParse(time));
+    print(difference.inDays);
+    if(difference.inDays==0)
+    {
+      ans.add(data);
+    }
+  }
+
   showl(String data, String name) {
+    print('yesss00');
     return StoryItem.inlineImage(
       url: data,
       controller: controller,
       duration: Duration(seconds: 100),
       caption: Text(
-        name == null ? 'All Status' : '@$name',
+        name == null ? 'User Profile' : '@$name',
         style: TextStyle(
           color: Colors.purple,
           fontStyle: FontStyle.italic,
@@ -212,13 +239,15 @@ class _StatusScreenState extends State<StatusScreen> {
 
   @override
   void initState() {
-    _firestore.collection('MyImages').get().then((querySnapshot) {
+    _firestore.collection('MImages').get().then((querySnapshot) {
       itemList.clear();
       imageList.clear();
       querySnapshot.docs.forEach((result) {
-        itemList.add(result['link']);
+        ans.add(result['userImage']);
         imageList.add(result['userImage']);
         userList.add(result['id']);
+        time.add(result['currTime']);
+        print(result['time']);
         print(result['link']);
         print(result['userImage']);
         print(result.data());
@@ -243,14 +272,15 @@ class _StatusScreenState extends State<StatusScreen> {
     if (_uploadFileURL != null) {
       dynamic key = CreateCryptoRandomString(32);
       final documentSnapshot =
-          await _firestore.collection('MyImages').doc(userData.userName).get();
+          await _firestore.collection('MImages').doc(userData.userName).get();
       if (documentSnapshot.exists == true) {
         print('yesss');
-        await _firestore.collection('MyImages').get().then((querySnapshot) {
+        await _firestore.collection('MImages').get().then((querySnapshot) {
           querySnapshot.docs.forEach((result) {
             if (result['id'] == userData.userName) {
               print('yess');
               list = result['url'];
+              storeTime=result['time'];
             }
           });
           setState(() {
@@ -260,19 +290,29 @@ class _StatusScreenState extends State<StatusScreen> {
           });
         });
         list.add(_uploadFileURL);
-        _firestore.collection('MyImages').doc(userData.userName).update({
+        print('${now}');
+        storeTime.add('${now}');
+        print(storeTime);
+        _firestore.collection('MImages').doc(userData.userName).update({
+          'link':_uploadFileURL,
           'url': list,
           'userImage':userData.imageUrl,
+          'currTime':'${now}',
+          'time':storeTime,
         }).then((value) {
           ShowToastNow();
         });
       } else {
         list.add(_uploadFileURL);
-        _firestore.collection('MyImages').doc(userData.userName).set({
+        storeTime.add('${now}');
+        print(storeTime);
+        _firestore.collection('MImages').doc(userData.userName).set({
           'id': userData.userName,
           'userImage': userData.imageUrl,
           'url': list,
           'link': _uploadFileURL,
+          'currTime':'${now}',
+          'time':storeTime,
         }).then((value) {
           ShowToastNow();
         });
@@ -281,10 +321,11 @@ class _StatusScreenState extends State<StatusScreen> {
       print('url is null');
     }
   }
+  
 
   ShowToastNow() {
     Fluttertoast.showToast(
-        msg: "Image Saved",
+        msg: "Status Uploaded",
         webShowClose: true,
         toastLength: Toast.LENGTH_LONG,
         backgroundColor: Colors.grey[700],

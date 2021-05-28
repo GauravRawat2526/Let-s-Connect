@@ -54,10 +54,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
 
-  Widget senderProfile()
-  {
-    
-  }
 }
 
 

@@ -8,11 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:lets_connect/model/user_data.dart';
 import 'package:lets_connect/services/firestore_service.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'dart:ui' as ui;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 class CanvasDraw extends StatefulWidget {
   final chatRoom;
@@ -86,15 +88,24 @@ class _CanvasDrawState extends State<CanvasDraw> {
         animatedIcon: AnimatedIcons.menu_arrow,
         children: [
           SpeedDialChild(
-            child:Icon(Icons.save,color:Colors.white),
+            child:Icon(Icons.send,color:Colors.white),
             backgroundColor: Colors.grey,
             label:"Send Doodle",
             onTap: (){
               setState(() {
-                //generateImage();
-                _saveImage();
+                _sendImage();
               });
             },
+          ),
+          SpeedDialChild(
+            child:Icon(Icons.save,color:Colors.white),
+            backgroundColor: Colors.grey,
+            label:"Save Doodle",
+            onTap: (){
+              setState((){
+              _saveImage();
+              });
+            }
           ),
           SpeedDialChild(
             child:Icon(Icons.replay_outlined,color:Colors.white),
@@ -163,11 +174,34 @@ class _CanvasDrawState extends State<CanvasDraw> {
     print(byteData);
     Uint8List pngByte=byteData.buffer.asUint8List();
     print(pngByte);
+
+    if(!(await Permission.storage.status.isGranted))
+    {
+      await Permission.storage.request();
+    }
+
+    final result=await ImageGallerySaver.saveImage(
+      Uint8List.fromList(pngByte),
+      quality: 50,
+      name:"canvas_image_${key}"
+    );
+    print(result);
+  }
+
+  Future<void> _sendImage() async{
+    dynamic key = CreateCryptoRandomString(32);
+    RenderRepaintBoundary boundary= globalKey.currentContext.findRenderObject();
+    ui.Image image=await boundary.toImage();
+    print(image);
+    ByteData byteData=await image.toByteData(format:ui.ImageByteFormat.png);
+    print(byteData);
+    Uint8List pngByte=byteData.buffer.asUint8List();
+    print(pngByte);
     Uint8List finalImage=Uint8List.view(pngByte.buffer);
     final Directory systemTempDir=Directory.systemTemp;
     final File file = await new File('${systemTempDir.path}/foo.png').create();
     file.writeAsBytes(finalImage);
-    final Reference ref=FirebaseStorage.instance.ref().child('Doodle_Images').child('image${key}png');
+    final Reference ref=FirebaseStorage.instance.ref().child('Doodle_Images').child('image${key}.png');
     final UploadTask uploadTask=ref.putFile(file);
     var url = await (await uploadTask).ref.getDownloadURL();
     _uploadFileURL = url.toString();  
